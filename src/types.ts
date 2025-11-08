@@ -157,3 +157,5 @@ export interface BugReport {
 
 }
 
+
+export type PageType = 'home' | 'library' | 'login' | 'signup' | 'manga' | 'reader' | 'search' | 'bug' | 'request';
