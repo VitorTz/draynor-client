@@ -10,6 +10,7 @@ import SignupPage from "../pages/SignUpPage";
 import Header from "./Header";
 import Footer from "./Footer";
 import UserProfilePage from "../pages/AccountPage";
+import MangaReader from "../pages/MangaReader";
 
 
 const Router = () => {
@@ -97,7 +98,7 @@ const Router = () => {
       case 'login': return <LoginPage navigate={navigate} />;
       case 'signup': return <SignupPage navigate={navigate} />;
       case 'manga': return <MangaPage navigate={navigate} manga_id={pageData.id} />;
-      case 'reader': return <ReaderPage navigate={navigate} chapterId={pageData} />;
+      case 'reader': return <MangaReader navigate={navigate} chapterId={pageData} />;
       case 'search': return <SearchPage navigate={navigate} />;
       default: return <HomePage navigate={navigate} />;
     }
