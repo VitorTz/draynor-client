@@ -105,11 +105,11 @@ const Router = () => {
 
   return (
     <div className="app">
-      <Header navigate={navigate} />
-      <main className="main-content">
+      {currentPage != 'reader' && <Header navigate={navigate} />}      
+      <main className={currentPage != 'reader' ? "main-content" : "main-content-reader"}>
         {renderPage()}
       </main>
-      <Footer />
+      {currentPage != 'reader' && <Footer />}      
     </div>
   );
 };
