@@ -9,6 +9,7 @@ import LoginPage from "../pages/LoginPage";
 import SignupPage from "../pages/SignUpPage";
 import Header from "./Header";
 import Footer from "./Footer";
+import UserProfilePage from "../pages/AccountPage";
 
 
 const Router = () => {
@@ -90,11 +91,12 @@ const Router = () => {
 
   const renderPage = () => {
     switch (currentPage) {
+      case 'account': return <UserProfilePage navigate={navigate} />;
       case 'home': return <HomePage navigate={navigate} />;
       case 'library': return <LibraryPage navigate={navigate} />;
       case 'login': return <LoginPage navigate={navigate} />;
       case 'signup': return <SignupPage navigate={navigate} />;
-      case 'manga': return <MangaPage navigate={navigate} manga_id={pageData} />;
+      case 'manga': return <MangaPage navigate={navigate} manga_id={pageData.id} />;
       case 'reader': return <ReaderPage navigate={navigate} chapterId={pageData} />;
       case 'search': return <SearchPage navigate={navigate} />;
       default: return <HomePage navigate={navigate} />;
@@ -103,7 +105,7 @@ const Router = () => {
 
   return (
     <div className="app">
-      <Header navigate={navigate} currentPage={currentPage} />
+      <Header navigate={navigate} />
       <main className="main-content">
         {renderPage()}
       </main>

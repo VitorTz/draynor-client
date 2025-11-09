@@ -47,12 +47,12 @@ const App = () => {
       .logout()
       .then(() => setUser(null))
       .catch(err => console.error('Logout failed:', err))
-  };
+  };  
 
   if (loading) { return <LoadingScreen />; }
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, setUser, login, signup, logout }}>
       <Router />
     </AuthContext.Provider>
   );

@@ -1,16 +1,14 @@
-import { Search, BookOpen, User, LogOut, Menu, X, Home, Library, Bug, Speaker, Phone } from 'lucide-react';
+import { Search, BookOpen, User, LogOut, Menu, X, Home, Library } from 'lucide-react';
 import type { PageType } from "../types";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
 
-// Header Component
 interface HeaderProps {
   navigate: (page: PageType, data?: any) => void;
-  currentPage: PageType;
 }
 
-const Header = ({ navigate, currentPage }: HeaderProps) => {
+const Header = ({ navigate }: HeaderProps) => {
 
   const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -43,25 +41,9 @@ const Header = ({ navigate, currentPage }: HeaderProps) => {
         </form>
 
         <nav className="header-nav desktop">
-          <button
-            className={currentPage === 'home' ? 'active' : ''}
-            onClick={() => navigate('home')}
-          >
-            <Home size={20} />
-            Home
-          </button>
-          {user && (
-            <button
-              className={currentPage === 'library' ? 'active' : ''}
-              onClick={() => navigate('library')}
-            >
-              <Library size={20} />
-              Library
-            </button>
-          )}
           {user ? (
             <div className="user-menu">
-              <button className="user-button">
+              <button className="user-button" onClick={() => navigate("account")}>
                 <User size={20} />
                 {user.username}
               </button>

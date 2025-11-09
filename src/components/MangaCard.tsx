@@ -7,7 +7,7 @@ interface MangaCardProps {
 }
 
 const MangaCard = ({ manga, navigate }: MangaCardProps) => (
-  <div className="manga-card" onClick={() => navigate('manga', manga.id)}>
+  <div className="manga-card" onClick={() => navigate('manga', manga)}>
     <div className="manga-cover">
       <img src={manga.cover_image_url} alt={manga.title} />
       <div className="manga-overlay">

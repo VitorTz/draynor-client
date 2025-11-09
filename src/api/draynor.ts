@@ -63,7 +63,7 @@ class UserAPI {
   }
 
   async updateProfileImage(file: File) {
-    return await api.upload("/user/image/perfil", file, "file");
+    return await api.upload<{url: string}>("/user/image/perfil", file);
   }
 
   async deleteProfileImage() {

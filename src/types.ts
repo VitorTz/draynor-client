@@ -57,6 +57,7 @@ export interface MangaPagData {
 
 export interface AuthContextType {
   user: User | null;
+  setUser: (user: User) => void;
   login: (email: string, password: string) => Promise<boolean>;
   signup: (username: string, email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
@@ -158,4 +159,4 @@ export interface BugReport {
 }
 
 
-export type PageType = 'home' | 'library' | 'login' | 'signup' | 'manga' | 'reader' | 'search' | 'bug' | 'request';
+export type PageType = 'home' | 'library' | 'login' | 'signup' | 'manga' | 'reader' | 'search' | 'bug' | 'request' | 'account';
