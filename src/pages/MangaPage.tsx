@@ -57,7 +57,7 @@ const MangaPage = ({ navigate, manga_id }: MangaPageProps) => {
           <h1>{manga.title}</h1>
           <div className="manga-meta">
             <span className="badge">{manga.status}</span>
-            <span>{chapters.length} chatpers</span>
+            <span>{chapters.length} chapters</span>
           </div>
           {manga.descr && <p className="manga-description">{manga.descr}</p>}
           

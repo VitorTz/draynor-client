@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import type { PageType } from "../types";
 import HomePage from "../pages/HomePage";
 import MangaPage from "../pages/MangaPage";
-import ReaderPage from "../pages/ReaderPage";
 import LibraryPage from "../pages/LibraryPage";
 import SearchPage from "../pages/SearchPage";
 import LoginPage from "../pages/LoginPage";
