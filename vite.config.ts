@@ -1,8 +1,12 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+
+const repoName = 'draynor-client';
+const branch = 'main';
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/draynor-client/',
+  base: branch === 'main' ? `/${repoName}/` : '/',
 })
