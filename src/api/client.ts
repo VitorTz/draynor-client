@@ -9,7 +9,7 @@ class ApiClient {
 
   private client: AxiosInstance;
 
-  constructor(baseURL: string = 'http://localhost:8000/api/v1') {
+  constructor(baseURL: string = 'https://draynor-api.fly.dev/api/v1') {
     this.client = axios.create({
       baseURL,
       headers: {
