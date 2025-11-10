@@ -97,9 +97,29 @@ export interface MangaPageChapter {
 export type ReadingStatusLiteral = 'Reading' | 'Completed' | 'On Hold' | 'Dropped' | 'Plan to Read' | 'Rereading'
 
 
+export interface Genre {
+  id: number
+  genre: string
+  created_at: string
+}
+
+
+
+export interface MangaAuthor {
+
+  author_name: string
+  author_id: number
+  role: string
+
+}
+
+
 export interface MangaPageData {
 
   manga: Manga
+  manga_num_views: number
+  genres: Genre[]
+  authors: MangaAuthor[]
   reading_status?: ReadingStatusLiteral
   chapters: MangaPageChapter[]
 

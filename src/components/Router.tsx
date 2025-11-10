@@ -97,14 +97,14 @@ const Router = () => {
       case 'login': return <LoginPage navigate={navigate} />;
       case 'signup': return <SignupPage navigate={navigate} />;
       case 'manga': return <MangaPage navigate={navigate} manga_id={pageData.id} />;
-      case 'reader': return <MangaReader navigate={navigate} chapterId={pageData} />;
+      case 'reader': return <MangaReader navigate={navigate} chapter_index={pageData} />;
       case 'search': return <SearchPage navigate={navigate} />;
       default: return <HomePage navigate={navigate} />;
     }
   };
 
   return (
-    <div className="app">
+    <div className={currentPage != 'reader' ? "app" : "app-reader"}>
       {currentPage != 'reader' && <Header navigate={navigate} />}      
       <main className={currentPage != 'reader' ? "main-content" : "main-content-reader"}>
         {renderPage()}

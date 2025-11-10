@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import type { User } from './types';
-import './App.css';
 import { draynorApi } from './api/draynor';
 import { AuthContext } from './context/AuthContext';
 import Router from './components/Router';
 import LoadingScreen from './components/LoadingScreen';
+import './App.css';
+import { ChapterListProvider } from './context/ChapterListContext';
 
 
 const App = () => {
@@ -53,7 +54,9 @@ const App = () => {
 
   return (
     <AuthContext.Provider value={{ user, setUser, login, signup, logout }}>
-      <Router />
+      <ChapterListProvider>
+        <Router />
+      </ChapterListProvider>
     </AuthContext.Provider>
   );
 };

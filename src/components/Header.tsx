@@ -2,6 +2,7 @@ import { Search, BookOpen, User, LogOut, Menu, X, Home, Library } from 'lucide-r
 import type { PageType } from "../types";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import './Header.css'
 
 
 interface HeaderProps {

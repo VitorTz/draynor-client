@@ -1,0 +1,100 @@
+.library-page {
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+}
+
+.library-page h1 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: var(--dark);
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.status-tabs {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 2.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.status-tabs button {
+  padding: 0.75rem 1.5rem;
+  border: 1px solid var(--border);
+  background: white;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.status-tabs button:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--light);
+}
+
+.status-tabs button.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  color: var(--text-light);
+  text-align: center;
+}
+
+.empty-state svg {
+  color: var(--primary);
+  opacity: 0.5;
+}
+
+.empty-state p {
+  margin-top: 1rem;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .library-page {
+    padding: 2rem 1.5rem;
+    border-radius: var(--border-radius);
+  }
+
+  .library-page h1 {
+    font-size: 2rem;
+  }
+
+  .status-tabs button {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+  }
+}
+
+
+
+@media (max-width: 520px) {
+
+  .library-page {
+    padding: 1.5rem 1rem;
+    border-radius: var(--border-radius);
+  }
+ 
+  .library-page h1 {
+    font-size: 1.75rem;
+  }
+
+  
+}

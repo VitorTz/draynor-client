@@ -1,407 +1,283 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   ZoomIn,
   ZoomOut,
   Maximize2,
   ChevronLeft,
+  ChevronRight,
   Menu,
   X,
 } from "lucide-react";
 import { draynorApi } from "../api/draynor";
 import type { ChapterImageList, PageType } from "../types";
+import { useChapterList } from "../context/ChapterListContext";
+import "./MangaReader.css";
 
 interface MangaReaderProps {
   navigate: (page: PageType, data?: any) => void;
-  chapterId: number;
+  chapter_index: number;
 }
 
-const MangaReader = ({ navigate, chapterId }: MangaReaderProps) => {
+const LoadingScreen = () => (
+  <div className="loading-container">
+    <div className="spinner" />
+    <p className="loading-text">Loading chapter...</p>
+  </div>
+);
+
+const ErrorScreen = ({
+  message,
+  retry,
+}: {
+  message: string;
+  retry?: () => void;
+}) => (
+  <div className="error-container">
+    <p className="error-text">{message}</p>
+    {retry && (
+      <button className="retry-button" onClick={retry}>
+        Try again
+      </button>
+    )}
+  </div>
+);
+
+const MangaReader = ({ navigate, chapter_index }: MangaReaderProps) => {
+  const { chapters } = useChapterList();
   const [chapterData, setChapterData] = useState<ChapterImageList | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [zoom, setZoom] = useState(100);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [chapterIndex, setChapterIndex] = useState(chapter_index);
 
-  useEffect(() => {
-    fetchChapterImages();
-  }, [chapterId]);
+  const currentChapter = chapters[chapterIndex] || null;
+  const hasPrev = chapterIndex > 0;
+  const hasNext = chapterIndex < chapters.length - 1;
 
-  const fetchChapterImages = async () => {
+  const fetchChapterImages = useCallback(async () => {
+    if (!currentChapter) return;
+    setLoading(true);
     try {
-      const data = await draynorApi.chapters.getChapterImages(chapterId);
+      const data = await draynorApi.chapters.getChapterImages(currentChapter.id);
       setChapterData(data);
+      setError(null);
     } catch (err: any) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentChapter]);
 
-  const handleZoomIn = () => setZoom((prev) => Math.min(prev + 25, 200));
-  const handleZoomOut = () => setZoom((prev) => Math.max(prev - 25, 50));
+  useEffect(() => {
+    fetchChapterImages();
+  }, [fetchChapterImages]);
 
-  const toggleFullscreen = () => {
+  useEffect(() => {
+    const handler = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", handler);
+    return () => document.removeEventListener("fullscreenchange", handler);
+  }, []);
+
+  const nextChapter = useCallback(() => {
+    if (hasNext) setChapterIndex((i) => i + 1);
+  }, [hasNext]);
+
+  const prevChapter = useCallback(() => {
+    if (hasPrev) setChapterIndex((i) => i - 1);
+  }, [hasPrev]);
+
+  const handleZoomIn = useCallback(
+    () => setZoom((z) => Math.min(z + 25, 200)),
+    []
+  );
+  const handleZoomOut = useCallback(
+    () => setZoom((z) => Math.max(z - 25, 50)),
+    []
+  );
+
+  const toggleFullscreen = useCallback(() => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen();
-      setIsFullscreen(true);
     } else {
       document.exitFullscreen();
-      setIsFullscreen(false);
     }
-  };
+  }, []);
 
-  const closeDrawer = () => setDrawerOpen(false);
+  const imageElements = useMemo(() => {
+    if (!chapterData?.images) return null;
+    return chapterData.images.map((img, i) => (
+      <div key={i} className="vertical-image-wrapper">
+        <img
+          className="vertical-image"
+          src={img.image_url}
+          alt={`Page ${i + 1}`}
+          style={{ width: `${zoom}%`, height: "auto" }}
+          loading="lazy"
+        />
+      </div>
+    ));
+  }, [chapterData, zoom]);
 
   if (loading)
     return (
-      <div style={styles.container}>
-        <div style={styles.loadingContainer as any}>
-          <div style={styles.spinner}></div>
-          <p style={styles.loadingText}>Loading chapter...</p>
-        </div>
+      <div className="manga-reader-page">
+        <LoadingScreen />
       </div>
     );
 
   if (error)
     return (
-      <div style={styles.container}>
-        <div style={styles.errorContainer as any}>
-          <p style={styles.errorText as any}>{error}</p>
-          <button style={styles.retryButton} onClick={fetchChapterImages}>
-            Try again
-          </button>
-        </div>
+      <div className="manga-reader-page">
+        <ErrorScreen message={error} retry={fetchChapterImages} />
       </div>
     );
 
   if (!chapterData?.images?.length)
     return (
-      <div style={styles.container}>
-        <div style={styles.errorContainer as any}>
-          <p style={styles.errorText as any}>No images found</p>
-        </div>
+      <div className="manga-reader-page">
+        <ErrorScreen message="No images found" />
       </div>
     );
 
   return (
-    <div style={styles.container}>
-      {/* Header */}
-      <header style={styles.header as any}>
-        <div style={styles.headerContent as any}>
-          <div style={styles.headerInfo}>
+    <div className="manga-reader-page">
+      <header className="manga-reader-header">
+        <div className="manga-reader-header-content">
+          <div className="manga-reader-header-info">
             {chapterData.manga && (
-              <h1 style={styles.mangaTitle}>{chapterData.manga.title}</h1>
+              <h2 className="manga-reader-manga-title">
+                {chapterData.manga.title}
+              </h2>
             )}
             {chapterData.chapter && (
-              <p style={styles.chapterTitle}>
+              <p className="manga-reader-manga-title chapter-title">
                 Chapter - {chapterData.chapter.chapter_name}
               </p>
             )}
           </div>
 
-          {/* Desktop Toolbar */}
-          <div className="toolbar-desktop" style={styles.toolbarGroup}>
+          <div className="toolbar-desktop toolbar-group">
             <button
-              style={styles.toolbarButton}
+              className="toolbar-button"
               onClick={() => navigate("manga", chapterData.manga)}
             >
               <ChevronLeft size={20} /> Return
             </button>
+
             <button
-              style={styles.toolbarButton}
+              className="toolbar-button"
+              onClick={prevChapter}
+              disabled={!hasPrev}
+            >
+              <ChevronLeft size={20} /> Prev
+            </button>
+
+            <button
+              className="toolbar-button"
               onClick={handleZoomOut}
               disabled={zoom <= 50}
             >
               <ZoomOut size={20} />
             </button>
-            <span style={styles.zoomText as any}>{zoom}%</span>
+
+            <span className="zoom-text">{zoom}%</span>
+
             <button
-              style={styles.toolbarButton}
+              className="toolbar-button"
               onClick={handleZoomIn}
-              disabled={zoom >= 200}
+              disabled={zoom >= 100}
             >
               <ZoomIn size={20} />
             </button>
-            <button style={styles.toolbarButton} onClick={toggleFullscreen}>
+
+            <button
+              className="toolbar-button"
+              onClick={nextChapter}
+              disabled={!hasNext}
+            >
+              Next <ChevronRight size={20} />
+            </button>
+
+            <button className="toolbar-button" onClick={toggleFullscreen}>
               <Maximize2 size={20} />
             </button>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            className="toolbar-mobile-btn"
-            style={styles.menuButton}
+          <div
+            className="toolbar-mobile-btn menu-button"
             onClick={() => setDrawerOpen(true)}
           >
             <Menu size={22} />
-          </button>
+          </div>
         </div>
       </header>
 
-      {/* Drawer Overlay */}
-      {drawerOpen && (
-        <div style={styles.overlay} onClick={closeDrawer}></div>
-      )}
+      {drawerOpen && <div className="overlay" onClick={() => setDrawerOpen(false)} />}
 
-      {/* Drawer */}
-      <div
-        style={{
-          ...styles.drawer,
-          transform: drawerOpen
-            ? "translateX(0)"
-            : "translateX(100%)",
-        }}
-      >
-        <div style={styles.drawerHeader}>
-          <h2 style={styles.drawerTitle}>Menu</h2>
-          <button style={styles.closeButton} onClick={closeDrawer}>
+      <div className={`drawer ${drawerOpen ? "open" : ""}`}>
+        <div className="drawer-header">
+          <h2 className="drawer-title">Menu</h2>
+          <div className="close-button" onClick={() => setDrawerOpen(false)}>
             <X size={22} />
-          </button>
+          </div>
         </div>
 
-        <div style={styles.drawerContent}>
+        <div className="drawer-content">
           <button
-            style={styles.toolbarButton}
+            className="toolbar-button"
             onClick={() => {
               navigate("manga", chapterData.manga);
-              closeDrawer();
+              setDrawerOpen(false);
             }}
           >
             <ChevronLeft size={20} /> Return
           </button>
+
           <button
-            style={styles.toolbarButton}
+            className="toolbar-button"
+            onClick={prevChapter}
+            disabled={!hasPrev}
+          >
+            <ChevronLeft size={20} /> Previous Chapter
+          </button>
+
+          <button
+            className="toolbar-button"
+            onClick={nextChapter}
+            disabled={!hasNext}
+          >
+            <ChevronRight size={20} /> Next Chapter
+          </button>
+
+          <button
+            className="toolbar-button"
             onClick={handleZoomOut}
             disabled={zoom <= 50}
           >
             <ZoomOut size={20} /> Zoom Out
           </button>
+
           <button
-            style={styles.toolbarButton}
+            className="toolbar-button"
             onClick={handleZoomIn}
-            disabled={zoom >= 200}
+            disabled={zoom >= 100}
           >
             <ZoomIn size={20} /> Zoom In
           </button>
-          <button style={styles.toolbarButton} onClick={toggleFullscreen}>
+
+          <button className="toolbar-button" onClick={toggleFullscreen}>
             <Maximize2 size={20} /> Fullscreen
           </button>
         </div>
       </div>
 
-      {/* Reader */}
-      <main style={styles.main}>
-        <div style={styles.verticalContainer as any}>
-          {chapterData.images.map((image, index) => (
-            <div key={index} style={styles.verticalImageWrapper as any}>
-              <img
-                src={image.image_url}
-                alt={`Page ${index + 1}`}
-                style={{
-                  ...styles.verticalImage,
-                  transform: `scale(${zoom / 100})`,
-                  transformOrigin: "top center",
-                }}
-                loading="lazy"
-              />
-              {/* <div style={styles.pageNumber}>Page {index + 1}</div> */}
-            </div>
-          ))}
-        </div>
+      <main className="main">
+        <div className="vertical-container">{imageElements}</div>
       </main>
     </div>
   );
 };
-
-const styles: Record<string, any> = {
-  container: {
-    minHeight: "100vh",
-    backgroundColor: "#FFFAF7",
-    fontFamily:
-      "'League Spartan', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif",
-  },
-  header: {
-    backgroundColor: "#FFFFFF",
-    borderBottom: "1px solid #F0E5DD",
-    padding: "16px 24px",
-    position: "sticky",
-    top: 0,
-    zIndex: 100,
-    boxShadow: "0 2px 8px rgba(232, 116, 79, 0.08)",
-  },
-  headerContent: {
-    maxWidth: "1400px",
-    margin: "0 auto",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  headerInfo: { flex: 1, minWidth: "200px" },
-  mangaTitle: {
-    fontSize: "20px",
-    fontWeight: "600",
-    color: "#2B2118",
-    margin: "0 0 4px 0",
-  },
-  chapterTitle: { fontSize: "14px", color: "#8C7A6B", margin: 0 },
-  toolbarGroup: { display: "flex", gap: "8px", alignItems: "center" },
-  toolbarButton: {
-    backgroundColor: "#FFFFFF",
-    border: "1px solid #F0E5DD",
-    borderRadius: "4px",
-    padding: "8px 12px",
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    gap: "6px",
-    color: "#3A2E26",
-    fontSize: "14px",
-    width: "100%",
-    justifyContent: "flex-start",
-  },
-  menuButton: {
-    background: "none",
-    border: "none",
-    cursor: "pointer",
-    display: "none",
-  },
-  zoomText: {
-    fontSize: "14px",
-    fontWeight: "600",
-    color: "#3A2E26",
-    minWidth: "50px",
-    textAlign: "center",
-  },
-  main: { maxWidth: "1400px", margin: "0 auto", padding: "24px" },
-  verticalContainer: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "24px",
-  },
-  verticalImageWrapper: {
-    position: "relative",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  verticalImage: {
-    display: "block",
-    maxWidth: "100%",
-    height: "auto",
-    borderRadius: "4px",
-    boxShadow: "0 4px 16px rgba(232, 116, 79, 0.12)",
-    transition: "transform 0.2s ease",
-  },
-  pageNumber: {
-    marginTop: "8px",
-    fontSize: "14px",
-    color: "#8C7A6B",
-    fontWeight: "500",
-  },
-  overlay: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100vw",
-    height: "100vh",
-    backgroundColor: "rgba(0,0,0,0.2)",
-    zIndex: 150,
-  },
-  drawer: {
-    position: "fixed",
-    top: 0,
-    right: 0,
-    width: "240px",
-    height: "100vh",
-    backgroundColor: "#FFFFFF",
-    boxShadow: "-2px 0 8px rgba(0,0,0,0.1)",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    zIndex: 200,
-    transition: "transform 0.3s ease",
-  },
-  drawerHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "16px",
-    borderBottom: "1px solid #F0E5DD",
-  },
-  drawerTitle: { fontSize: "16px", fontWeight: "600", color: "#2B2118" },
-  closeButton: {
-    background: "none",
-    border: "none",
-    cursor: "pointer",
-  },
-  drawerContent: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "8px",
-    padding: "16px",
-  },
-  loadingContainer: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: "100vh",
-    gap: "16px",
-  },
-  spinner: {
-    width: "48px",
-    height: "48px",
-    border: "4px solid #F0E5DD",
-    borderTop: "4px solid #E8744F",
-    borderRadius: "50%",
-    animation: "spin 1s linear infinite",
-  },
-  loadingText: { fontSize: "16px", color: "#8C7A6B" },
-  errorContainer: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: "100vh",
-    gap: "16px",
-    padding: "24px",
-  },
-  errorText: { fontSize: "16px", color: "#D4522A", textAlign: "center" },
-  retryButton: {
-    backgroundColor: "#E8744F",
-    color: "#FFFFFF",
-    border: "none",
-    borderRadius: "4px",
-    padding: "12px 24px",
-    cursor: "pointer",
-    fontSize: "14px",
-    fontWeight: "600",
-  },
-};
-
-const styleSheet = document.createElement("style");
-styleSheet.textContent = `
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-button:hover:not(:disabled) {
-  background-color: #F4A261 !important;
-  box-shadow: 0 4px 12px rgba(232, 116, 79, 0.2) !important;
-}
-
-button:active:not(:disabled) {
-  transform: scale(0.98);
-}
-
-@media (max-width: 768px) {
-  .toolbar-desktop { display: none !important; }
-  .toolbar-mobile-btn { display: block !important; }
-}
-`;
-document.head.appendChild(styleSheet);
 
 export default MangaReader;

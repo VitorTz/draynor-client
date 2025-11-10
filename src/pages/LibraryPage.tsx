@@ -4,6 +4,7 @@ import { draynorApi } from "../api/draynor";
 import { BookOpen } from "lucide-react";
 import LoadingScreen from "../components/LoadingScreen";
 import MangaCard from "../components/MangaCard";
+import './LibraryPage.css'
 
 
 interface LibraryPageProps {

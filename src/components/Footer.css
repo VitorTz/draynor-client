@@ -40,3 +40,13 @@
 .footer .links a:hover {
   color: var(--secondary);
 }
+
+
+@media (max-width: 520px) {
+
+  .footer {
+    padding: 1.5rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+}

@@ -1,4 +1,5 @@
 import type { Manga, PageType } from "../types";
+import './MangaSection.css'
 
 
 interface MangaCardProps {

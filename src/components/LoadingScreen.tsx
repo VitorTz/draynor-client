@@ -1,3 +1,4 @@
+import './LoadingScreen.css'
 
 
 const LoadingScreen =  () => (

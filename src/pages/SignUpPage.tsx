@@ -1,6 +1,7 @@
 import type { PageType } from "../types";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import './AuthPage.css'
 
 
 interface SignupPageProps {

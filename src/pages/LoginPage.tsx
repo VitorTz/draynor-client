@@ -1,6 +1,7 @@
 import type { PageType } from "../types";
 import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
+import './AuthPage.css'
 
 
 interface LoginPageProps {

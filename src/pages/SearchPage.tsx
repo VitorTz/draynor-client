@@ -3,6 +3,7 @@ import type { PageType, Manga } from "../types";
 import { draynorApi } from "../api/draynor";
 import MangaCard from "../components/MangaCard";
 import LoadingScreen from "../components/LoadingScreen";
+import './SearchPage.css'
 
 
 interface SearchPageProps {

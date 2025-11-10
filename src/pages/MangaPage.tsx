@@ -1,23 +1,29 @@
-import {ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { useState, useEffect } from "react";
-import type { Manga, PageType } from "../types";
+import { type Genre, type MangaAuthor, type Manga, type PageType } from "../types";
 import { useAuth } from "../context/AuthContext";
 import { draynorApi } from "../api/draynor";
 import LoadingScreen from '../components/LoadingScreen';
-
+import './MangaPage.css';
+import { useChapterList } from '../context/ChapterListContext';
 
 interface MangaPageProps {
   navigate: (page: PageType, data?: any) => void;
-  manga_id: number
+  manga_id: number;
 }
 
 const MangaPage = ({ navigate, manga_id }: MangaPageProps) => {
-  
-  const [chapters, setChapters] = useState<{id: number, chapter_name: string}[]>([]);
-  const [manga, setManga] = useState<Manga | null>(null)
+  const { chapters, setChapters, setIndex } = useChapterList();
+  const [manga, setManga] = useState<Manga | null>(null);
+  const [genres, setGenres] = useState<Genre[]>([]);
+  const [authors, setAuthors] = useState<MangaAuthor[]>([]);
   const [readingStatus, setReadingStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 40;
+  const totalPages = Math.ceil(chapters.length / itemsPerPage);
 
   useEffect(() => {
     loadMangaData();
@@ -25,10 +31,13 @@ const MangaPage = ({ navigate, manga_id }: MangaPageProps) => {
 
   const loadMangaData = async () => {
     try {
-      const pageData = await draynorApi.mangas.getPageData(manga_id)
-      setManga(pageData.manga)
-      setReadingStatus(pageData.reading_status ?? null)
-      setChapters(pageData.chapters)
+      const pageData = await draynorApi.mangas.getPageData(manga_id);
+      setManga(pageData.manga);
+      setReadingStatus(pageData.reading_status ?? null);
+      setGenres(pageData.genres);
+      setAuthors(pageData.authors);
+      setChapters(pageData.chapters);
+      setCurrentPage(1);
     } catch (error) {
       console.error('Failed to load manga:', error);
     } finally {
@@ -37,9 +46,9 @@ const MangaPage = ({ navigate, manga_id }: MangaPageProps) => {
   };
 
   const updateReadingStatus = async (status: string) => {
-    if (!manga) { return }
+    if (!manga) return;
     try {
-      await draynorApi.library.createReadingStatus(manga.id, status)
+      await draynorApi.library.createReadingStatus(manga.id, status);
       loadMangaData();
     } catch (error) {
       console.error('Failed to update status:', error);
@@ -49,18 +58,54 @@ const MangaPage = ({ navigate, manga_id }: MangaPageProps) => {
   if (loading) return <LoadingScreen />;
   if (!manga) return <div>Mangá não encontrado</div>;
 
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const visibleChapters = chapters.slice(startIndex, endIndex);
+
   return (
-    <div className="manga-page">
+    <div className="manga-page" style={{ '--manga-color': manga.color } as React.CSSProperties}>
       <div className="manga-header">
-        <img src={manga.cover_image_url} alt={manga.title} className="manga-cover-large" />
+        <div className="manga-cover-wrapper">
+          <img 
+            src={manga.cover_image_url} 
+            alt={manga.title} 
+            className="manga-cover-large" />
+        </div>
+
         <div className="manga-details">
           <h1>{manga.title}</h1>
+
           <div className="manga-meta">
-            <span className="badge">{manga.status}</span>
+            <span className="badge manga-badge">{manga.status}</span>
             <span>{chapters.length} chapters</span>
           </div>
+
+          {authors.length > 0 && (
+            <div className="manga-authors">
+              <strong>Authors:</strong>{" "}
+              {authors.map((a, i) => (
+                <span key={a.author_id}>
+                  {a.author_name} ({a.role})
+                  {i < authors.length - 1 && ", "}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {genres.length > 0 && (
+            <div className="manga-genres">
+              <strong>Genres:</strong>{" "}
+              {genres.map((g, i) => (
+                <span key={g.id}>
+                  {g.genre}
+                  {i < genres.length - 1 && ", "}
+                </span>
+              ))}
+            </div>
+          )}
+
           {manga.descr && <p className="manga-description">{manga.descr}</p>}
-          
+
           {user && (
             <div className="reading-status-buttons">
               <select
@@ -81,17 +126,40 @@ const MangaPage = ({ navigate, manga_id }: MangaPageProps) => {
       </div>
 
       <div className="chapters-list">
-        <h2>Capítulos</h2>
-        {chapters.map(chapter => (
+        <h2>Chapters</h2>
+        {visibleChapters.map((chapter, index) => (
           <div
             key={chapter.id}
             className="chapter-item"
-            onClick={() => navigate('reader', chapter.id)}
+            onClick={() => {
+              setIndex(startIndex + index);
+              navigate('reader', startIndex + index);
+            }}
           >
             <span>Chapter {chapter.chapter_name}</span>
-            <ChevronRight size={20} />
+            <ChevronRight size={20} className="chapter-chevron" />
           </div>
         ))}
+
+        {totalPages > 1 && (
+          <div className="pagination">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+            >
+              Prev
+            </button>
+            <span>
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
