@@ -131,7 +131,7 @@ const Header = ({ navigate }: HeaderProps) => {
                 <Bug size={18} /> Bug Report
               </button>
               <button onClick={() => { navigate('request'); setHamburgerOpen(false); }}>
-                <Mail size={18} /> Manga Request
+                <Mail size={18} /> Request Manga
               </button>
             </div>
           </div>
