@@ -1,13 +1,15 @@
-import { Search, User, LogOut, Menu, X, Home, Library, Bug, Mail } from 'lucide-react';
+import { Search, User, LogOut, Menu, X, Library, Bug, Mail } from 'lucide-react';
 import type { PageType, Manga } from "../types";
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import { draynorApi } from "../api/draynor";
 import './Header.css';
 
+
 interface HeaderProps {
   navigate: (page: PageType, data?: any) => void;
 }
+
 
 const Header = ({ navigate }: HeaderProps) => {
   const { user, logout } = useAuth();
@@ -34,8 +36,7 @@ const Header = ({ navigate }: HeaderProps) => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  // --- Real-time search ---
+  
   useEffect(() => {
     if (!searchQuery.trim()) {
       setSearchResults([]);
@@ -138,7 +139,6 @@ const Header = ({ navigate }: HeaderProps) => {
           {user ? (
             <div className="user-menu" ref={userMenuRef}>
               <button className="user-button" onClick={() => setUserMenuOpen(!userMenuOpen)}>
-                <User size={20} />
                 {user.username}
               </button>
               <div className={`user-dropdown ${userMenuOpen ? 'open' : ''}`}>

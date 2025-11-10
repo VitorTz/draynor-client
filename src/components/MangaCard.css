@@ -35,7 +35,7 @@
   transform: scale(1.06);
 }
 
-/* Status */
+
 .manga-status-badge {
   position: absolute;
   bottom: 10px;
@@ -51,36 +51,35 @@ font-weight: 500;
 }
 
 
-/* Status colors */
 .status-ongoing {
-  background: #2196f3; /* Blue */
+  background: #2196f3;
 }
 
 .status-completed {
-  background: #4caf50; /* Green */
+  background: #4caf50;
 }
 
 .status-hiatus {
-  background: #ff9800; /* Orange */
+  background: #ff9800;
 }
 
 .status-cancelled {
-  background: #f44336; /* Red */
+  background: #f44336;
 }
 
 .status-discontinued {
-  background: #9c27b0; /* Purple */
+  background: #9c27b0;
 }
 
 .status-oneshot {
-  background: #00bcd4; /* Cyan */
+  background: #00bcd4;
 }
 
 .status-upcoming {
-  background: #9e9e9e; /* Gray */
+  background: #9e9e9e;
 }
 
-/* Info */
+
 .manga-info {
   padding: 0.9rem 1rem 1rem;
   display: flex;
@@ -109,7 +108,7 @@ font-weight: 500;
   text-overflow: ellipsis;
 }
 
-/* Responsivo */
+
 @media (max-width: 600px) {
   .manga-card {
     border-radius: 8px;

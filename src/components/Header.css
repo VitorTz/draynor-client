@@ -1,3 +1,5 @@
+
+
 :root {
   --primary: #DC0E0E;
   --secondary: #E62727;
@@ -240,8 +242,15 @@
 .user-button {
   background: var(--primary) !important;
   color: white !important;
-  font-weight: 600 !important;
+  font-weight: 600 !important;  
+  align-items: center;
+  justify-content: flex-start;
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
 
 .user-button:hover {
   background: var(--secondary) !important;
@@ -325,4 +334,9 @@
   .user-button span {
     display: none;
   }
+
+  .user-button {
+    max-width: 100px;
+  }
+
 }

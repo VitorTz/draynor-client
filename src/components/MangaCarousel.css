@@ -111,10 +111,7 @@
   height: 100%;
   object-fit: cover;
   border-radius: var(--border-radius);
-  border: 3px solid var(--border);
 }
-
-/* --- 6. Textos e Botões --- */
 
 .slide-info {
   flex-grow: 1;
@@ -287,7 +284,7 @@
 @media (max-width: 768px) {
   .manga-carousel-container {
     height: 600px;
-    border-radius: 0;
+    border-radius: var(--border-radius);
     margin-bottom: 1.5rem;
   }
 
@@ -311,12 +308,11 @@
   .slide-info {
     align-items: center;
     text-align: center;
-    gap: 0.5rem; /* Espaço entre os itens de info reduzido */
+    gap: 0.5rem;
   }
-
-  /* --- AJUSTES DE FONTE --- */
+  
   .slide-info h2 {
-    font-size: 1.65rem; /* Fonte do título ligeiramente menor */
+    font-size: 1.65rem;
     -webkit-line-clamp: 2;
   }
 

@@ -266,10 +266,7 @@ const MangaReader = ({ navigate, chapter_index }: MangaReaderProps) => {
           >
             <ZoomIn size={20} /> Zoom In
           </button>
-
-          <button className="toolbar-button" onClick={toggleFullscreen}>
-            <Maximize2 size={20} /> Fullscreen
-          </button>
+                    
         </div>
       </div>
 

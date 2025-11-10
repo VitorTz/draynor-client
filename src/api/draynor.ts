@@ -16,7 +16,7 @@ import type {
   Genre,
 } from "../types";
 
-// ---------- AUTH ----------
+
 class AuthAPI {
   async me() {
     return await api.get<User>("/auth/me");
@@ -58,7 +58,7 @@ class AuthAPI {
   }
 }
 
-// ---------- USER ----------
+
 class UserAPI {
   async updateProfile(data: { username?: string; email?: string }) {
     return await api.put<User>("/user/", data);
@@ -73,7 +73,7 @@ class UserAPI {
   }
 }
 
-// ---------- MANGAS ----------
+
 class MangaAPI {
   async getPopular(limit = 64, offset = 0) {
     return await api.get<PaginationResponse<Manga>>("/mangas/popular", {
@@ -134,7 +134,7 @@ class MangaAPI {
   }
 }
 
-// ---------- CHAPTERS ----------
+
 class ChapterAPI {
   async getChaptersByMangaId(
     manga_id: number,
@@ -155,7 +155,7 @@ class ChapterAPI {
   }
 }
 
-// ---------- LIBRARY ----------
+
 class LibraryAPI {
   async getByStatus(
     reading_status: ReadingStatusLiteral,
@@ -182,7 +182,7 @@ class LibraryAPI {
   }
 }
 
-// ---------- COLLECTIONS ----------
+
 class CollectionAPI {
   async getCollections(limit = 64, offset = 0) {
     return await api.get<PaginationResponse<Collection>>("/collections/", {
@@ -200,7 +200,7 @@ class CollectionAPI {
   }
 }
 
-// ---------- BUG REPORTS ----------
+
 class BugAPI {
   async reportBug(
     title: string,
@@ -215,7 +215,7 @@ class BugAPI {
   }
 }
 
-// ---------- MANGA REQUESTS ----------
+
 class MangaRequestAPI {
   async createRequest(title: string, message?: string) {
     return await api.post("/manga/requests/", { title, message });
@@ -228,7 +228,7 @@ class GenreAPI {
   }
 }
 
-// ---------- ROOT WRAPPER ----------
+
 class DraynorApi {
   readonly auth = new AuthAPI();
   readonly user = new UserAPI();
@@ -241,5 +241,5 @@ class DraynorApi {
   readonly genres = new GenreAPI();
 }
 
-// Singleton instance
+
 export const draynorApi = new DraynorApi();
