@@ -6,6 +6,8 @@ import Router from './components/Router';
 import LoadingScreen from './components/LoadingScreen';
 import './App.css';
 import { ChapterListProvider } from './context/ChapterListContext';
+import { MangaCarouselProvider } from './context/MangaCarouselContext';
+import { GenreProvider } from './context/GenreContext';
 
 
 const App = () => {
@@ -54,9 +56,13 @@ const App = () => {
 
   return (
     <AuthContext.Provider value={{ user, setUser, login, signup, logout }}>
-      <ChapterListProvider>
-        <Router />
-      </ChapterListProvider>
+      <MangaCarouselProvider>
+        <ChapterListProvider>
+          <GenreProvider>
+            <Router />
+          </GenreProvider>
+        </ChapterListProvider>
+      </MangaCarouselProvider>
     </AuthContext.Provider>
   );
 };

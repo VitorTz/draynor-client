@@ -1,0 +1,48 @@
+.popular-page {
+  padding: 2rem 1rem;
+  background: var(--bg);
+  min-height: 100vh;
+}
+
+.popular-title {
+  font-size: 2.25rem;
+  color: var(--dark);
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.load-more-button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.load-more-button:hover {
+  background: var(--secondary);
+  box-shadow: var(--shadow-md);
+}
+
+.load-more-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .popular-title {
+    font-size: 1.75rem;
+  }
+}

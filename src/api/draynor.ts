@@ -12,6 +12,8 @@ import type {
   Collection,
   BugReport,
   ReadingStatusLiteral,
+  BugType,
+  Genre,
 } from "../types";
 
 // ---------- AUTH ----------
@@ -101,8 +103,26 @@ class MangaAPI {
     });
   }
 
+  async searchMangas(
+    title: string | null, 
+    genre_id: number | null, 
+    order: 'ASC' | 'DESC', 
+    limit: number = 64,
+    offset: number = 0
+  ) {
+    return await api.get<PaginationResponse<Manga>>(
+      `/mangas/search/complete/?limit=${limit}&offset=${offset}&order=${order}${genre_id ? `&genre_id=${genre_id}` : ''}${title ? `&title=${title}` : ''}`
+    )
+  }
+
   async getPageData(manga_id: number) {
     return await api.get<MangaPageData>("/mangas/page", { manga_id });
+  }
+
+  async getCarrousel(limit = 12, offset = 0) {
+    return await api.get<PaginationResponse<MangaPageData>>(
+      `/mangas/page/list/?limit=${limit}&offset=${offset}`
+    )
   }
 
   async getByGenre(genre_id: number, limit = 64, offset = 0) {
@@ -184,7 +204,7 @@ class CollectionAPI {
 class BugAPI {
   async reportBug(
     title: string,
-    bug_type: string,
+    bug_type: BugType,
     descr?: string
   ): Promise<BugReport> {
     return await api.post<BugReport>("/reports/bugs/", {
@@ -202,6 +222,12 @@ class MangaRequestAPI {
   }
 }
 
+class GenreAPI {
+  async getGenres(): Promise<PaginationResponse<Genre>> {
+    return await api.get<PaginationResponse<Genre>>("/genres");
+  }
+}
+
 // ---------- ROOT WRAPPER ----------
 class DraynorApi {
   readonly auth = new AuthAPI();
@@ -212,6 +238,7 @@ class DraynorApi {
   readonly collections = new CollectionAPI();
   readonly bugs = new BugAPI();
   readonly mangaRequests = new MangaRequestAPI();
+  readonly genres = new GenreAPI();
 }
 
 // Singleton instance

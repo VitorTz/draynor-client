@@ -3,6 +3,8 @@ import type { Manga, PageType } from "../types";
 import { draynorApi } from "../api/draynor";
 import LoadingScreen from "../components/LoadingScreen";
 import MangaSection from "../components/MangaSection";
+import RandomMangaSection from "../components/RandomMangaSection";
+import MangaCarousel from "../components/MangaCarousel";
 
 
 const PAGE_LIMIT = 12
@@ -44,9 +46,10 @@ const HomePage = ({ navigate }: HomePageProps) => {
 
   return (
     <div className="home-page">
-      <MangaSection title="Most Popular" mangas={popularMangas} navigate={navigate} />
-      <MangaSection title="Latest Updates" mangas={latestMangas} navigate={navigate} />
-      <MangaSection title="Random" mangas={randomMangas} navigate={navigate} />
+      <MangaCarousel navigate={navigate} />
+      <MangaSection title="Most Popular" mangas={popularMangas} navigate={navigate} viewAllPage="most-popular" />
+      <MangaSection title="Latest Updates" mangas={latestMangas} navigate={navigate} viewAllPage="latest-mangas" />
+      <RandomMangaSection navigate={navigate} />
     </div>
   );
 };

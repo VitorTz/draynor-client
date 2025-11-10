@@ -129,7 +129,7 @@ const MangaPage = ({ navigate, manga_id }: MangaPageProps) => {
         <h2>Chapters</h2>
         {visibleChapters.map((chapter, index) => (
           <div
-            key={chapter.id}
+            key={index}
             className="chapter-item"
             onClick={() => {
               setIndex(startIndex + index);

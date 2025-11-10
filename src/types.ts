@@ -168,15 +168,21 @@ export interface Collection {
 }
 
 
+export type BugType = 'UI' | 'Backend' | 'Performance' | 'Security' | 'Database' | 'Network' | 'Crash' | 'Logic' | 'Compatibility' | 'Other'
+
+
 export interface BugReport {
 
   id: number
   title: string
   descr?: string
-  bug_type: string
+  bug_type: BugType
   created_at: string
 
 }
 
 
-export type PageType = 'home' | 'library' | 'login' | 'signup' | 'manga' | 'reader' | 'search' | 'bug' | 'request' | 'account';
+export type PageType = 'home' | 'library' | 'login' | 'signup' | 'manga' | 'reader' | 'search' | 'bug' | 'request' | 'account' | 'most-popular' | 'latest-mangas';
+
+
+export type MangaStatus = 'Ongoing' | 'Completed' | 'Hiatus' | 'Cancelled' | 'Discontinued' | 'One-shot' | 'Upcoming'

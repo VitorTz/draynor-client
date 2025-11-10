@@ -8,16 +8,12 @@ import {
   X,
   Loader  
 } from "lucide-react";
-import type { PageType } from "../types";
 import { useAuth } from "../context/AuthContext";
 import { draynorApi } from "../api/draynor";
 import "./AccountPage.css";
 
-interface UserProfilePageProps {
-  navigate: (page: PageType, data?: any) => void;
-}
 
-const UserProfilePage = ({ navigate }: UserProfilePageProps) => {
+const UserProfilePage = ( ) => {
 
   const { user, setUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
