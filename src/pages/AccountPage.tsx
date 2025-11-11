@@ -1,21 +1,17 @@
 import { useState } from "react";
-import {
-  Camera,
-  User,
-  Mail,
-  Calendar,
-  Check,
-  X,
-  Loader  
-} from "lucide-react";
+import { Camera, User, Mail, Calendar, Check, X, Loader, LogOut } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { draynorApi } from "../api/draynor";
 import "./AccountPage.css";
+import type { PageType } from "../types";
+
+interface UserProfilePageProps {
+  navigate: (page: PageType, data?: any) => void
+}
 
 
-const UserProfilePage = ( ) => {
-
-  const { user, setUser } = useAuth();
+const UserProfilePage = ({ navigate }: UserProfilePageProps) => {
+  const { user, setUser, logout } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
     username: user?.username ?? "",
@@ -44,13 +40,13 @@ const UserProfilePage = ( ) => {
       .updateProfile(editForm)
       .then((user) => setUser(user))
       .catch((err) => {
-        setError(err.response.data.detail ?? "invalid data")
-        setEditForm({ username: user!.username, email: user!.email })
-    });
+        setError(err.response.data.detail ?? "invalid data");
+        setEditForm({ username: user!.username, email: user!.email });
+      });
     setLoading(false);
     setIsEditing(false);
   };
-  
+
   const handleImageUpload = async (e: any) => {
     if (!user) {
       return;
@@ -83,6 +79,11 @@ const UserProfilePage = ( ) => {
     setIsEditing(false);
     setError("");
   };
+
+  const handleLogout = async () => {
+    logout()
+    navigate('home')
+  }
 
   if (!user) {
     return <></>;
@@ -264,7 +265,6 @@ const UserProfilePage = ( ) => {
                 />
               </div>
 
-              
               <div
                 style={{
                   background: "var(--bg)",
@@ -375,7 +375,7 @@ const UserProfilePage = ( ) => {
                   </div>
                 </div>
               )}
-              
+
               <div
                 style={{
                   display: "flex",
@@ -385,12 +385,21 @@ const UserProfilePage = ( ) => {
                 }}
               >
                 {!isEditing ? (
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => setIsEditing(true)}
-                  >
-                    Edit
-                  </button>
+                  <>
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => setIsEditing(true)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="btn btn-danger"
+                      onClick={handleLogout}
+                    >
+                      <LogOut size={18} />
+                      Logout
+                    </button>
+                  </>
                 ) : (
                   <>
                     <button
@@ -430,7 +439,6 @@ const UserProfilePage = ( ) => {
           </div>
         </div>
       </div>
-
       <style>{`
         @keyframes spin {
           from { transform: rotate(0deg); }

@@ -13,7 +13,7 @@ interface MangaPageProps {
 }
 
 const MangaPage = ({ navigate, manga_id }: MangaPageProps) => {
-  const { chapters, setChapters, setIndex } = useChapterList();
+  const { chapters, setChapters, setIndex, setManga: setCurrentManga } = useChapterList();
   const [manga, setManga] = useState<Manga | null>(null);
   const [genres, setGenres] = useState<Genre[]>([]);
   const [authors, setAuthors] = useState<MangaAuthor[]>([]);
@@ -33,6 +33,7 @@ const MangaPage = ({ navigate, manga_id }: MangaPageProps) => {
     try {
       const pageData = await draynorApi.mangas.getPageData(manga_id);
       setManga(pageData.manga);
+      setCurrentManga(pageData.manga)
       setReadingStatus(pageData.reading_status ?? null);
       setGenres(pageData.genres);
       setAuthors(pageData.authors);
@@ -133,7 +134,7 @@ const MangaPage = ({ navigate, manga_id }: MangaPageProps) => {
             className="chapter-item"
             onClick={() => {
               setIndex(startIndex + index);
-              navigate('reader', startIndex + index);
+              navigate('reader', {chapterIndex: startIndex + index, mangaId: manga.id, chapterId: chapter.id});
             }}
           >
             <span>Chapter {chapter.chapter_name}</span>

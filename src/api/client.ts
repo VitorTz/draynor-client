@@ -5,11 +5,19 @@ import axios, {
 } from 'axios';
 
 
+
+
+// const IS_PRODUCTION = import.meta.env.VITE_ENV === "PROD"
+
+// const BASE_URL = IS_PRODUCTION ?  import.meta.env.VITE_API_URL : import.meta.env.VITE_API_URL_DEV
+
+const BASE_URL = "https://draynor-api.fly.dev/api/v1"
+
 class ApiClient {
 
   private client: AxiosInstance;
 
-  constructor(baseURL: string = 'https://draynor-api.fly.dev/api/v1') {
+  constructor(baseURL: string = BASE_URL) {
     this.client = axios.create({
       baseURL,
       headers: {

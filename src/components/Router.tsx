@@ -28,8 +28,8 @@ const Router = () => {
       return { page: "manga" as PageType, data: { id } };
     }
     if (clean.startsWith("reader-")) {
-      const id = parseInt(clean.split("-")[1], 10);
-      return { page: "reader" as PageType, data: id };
+      const nums = clean.split("-").slice(1).map(i => parseInt(i))
+      return { page: "reader" as PageType, data: {mangaId: nums[0], chapterId: nums[1], chapterIndex: nums[2]} };
     }
     if (clean === "library") return { page: "library" as PageType, data: null };
     if (clean === "login") return { page: "login" as PageType, data: null };
@@ -89,7 +89,7 @@ const Router = () => {
     // build a unique hash for page+id
     let hash = `#${page}`;
     if (page === "manga" && data?.id) hash = `#manga-${data.id}`;
-    if (page === "reader" && typeof data === "number") hash = `#reader-${data}`;
+    if (page === "reader") hash = `#reader-${data.mangaId}-${data.chapterId}-${data.chapterIndex}`;
 
     // push a new history entry with state and unique URL
     window.history.pushState(
@@ -102,7 +102,7 @@ const Router = () => {
   const renderPage = () => {
     switch (currentPage) {
       case "account":
-        return <UserProfilePage />;
+        return <UserProfilePage navigate={navigate} />;
       case "home":
         return <HomePage navigate={navigate} />;
       case "library":
@@ -114,7 +114,7 @@ const Router = () => {
       case "manga":
         return <MangaPage navigate={navigate} manga_id={pageData.id} />;
       case "reader":
-        return <MangaReader navigate={navigate} chapter_index={pageData} />;
+        return <MangaReader navigate={navigate} data={pageData} />;
       case "search":
         return <SearchPage navigate={navigate} />;
       case "most-popular":

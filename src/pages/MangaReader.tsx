@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import {
   ZoomIn,
   ZoomOut,
@@ -13,10 +13,6 @@ import type { ChapterImageList, PageType } from "../types";
 import { useChapterList } from "../context/ChapterListContext";
 import "./MangaReader.css";
 
-interface MangaReaderProps {
-  navigate: (page: PageType, data?: any) => void;
-  chapter_index: number;
-}
 
 const LoadingScreen = () => (
   <div className="loading-container">
@@ -42,37 +38,56 @@ const ErrorScreen = ({
   </div>
 );
 
-const MangaReader = ({ navigate, chapter_index }: MangaReaderProps) => {
-  const { chapters } = useChapterList();
-  const [chapterData, setChapterData] = useState<ChapterImageList | null>(null);
+
+interface MangaReaderProps {
+  navigate: (page: PageType, data?: any) => void;
+  data: {
+    mangaId: number
+    chapterId: number
+    chapterIndex: number
+  };
+}
+
+
+const MangaReader = ({ navigate, data }: MangaReaderProps) => {
+  
+  const { chapters, setChapters } = useChapterList()
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [zoom, setZoom] = useState(100);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [chapterIndex, setChapterIndex] = useState(chapter_index);
+  const [drawerOpen, setDrawerOpen] = useState(false);  
+  
+  const [pageData, setPageData] = useState<ChapterImageList | null>()
+  
+  const hasPrev = data.chapterIndex > 0;
+  const hasNext = data.chapterIndex < chapters.length - 1;    
+  
+  console.log(data)
 
-  const currentChapter = chapters[chapterIndex] || null;
-  const hasPrev = chapterIndex > 0;
-  const hasNext = chapterIndex < chapters.length - 1;
+  const init = async () => {
+    setLoading(true)    
 
-  const fetchChapterImages = useCallback(async () => {
-    if (!currentChapter) return;
-    setLoading(true);
-    try {
-      const data = await draynorApi.chapters.getChapterImages(currentChapter.id);
-      setChapterData(data);
-      setError(null);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+    if (chapters.length == 0) {
+      const c = await draynorApi.chapters.getChaptersByMangaId(data.mangaId)
+      setChapters(c.chapters)
     }
-  }, [currentChapter]);
+
+    try {
+      const d = await draynorApi.chapters.getChapterImages(data.chapterId)
+      setPageData(d)
+      setError(null);
+    }
+     catch (err: any) {
+      setError(err.message);
+    }
+  
+    setLoading(false)
+  }
 
   useEffect(() => {
-    fetchChapterImages();
-  }, [fetchChapterImages]);
+    init()
+  }, [data.chapterIndex]);
 
   useEffect(() => {
     const handler = () => setIsFullscreen(!!document.fullscreenElement);
@@ -81,11 +96,19 @@ const MangaReader = ({ navigate, chapter_index }: MangaReaderProps) => {
   }, []);
 
   const nextChapter = useCallback(() => {
-    if (hasNext) setChapterIndex((i) => i + 1);
+    if (hasNext) navigate('reader', {
+      mangaId: data.mangaId, 
+      chapterIndex: data.chapterIndex + 1, 
+      chapterId: chapters[data.chapterIndex + 1].id
+    })
   }, [hasNext]);
 
   const prevChapter = useCallback(() => {
-    if (hasPrev) setChapterIndex((i) => i - 1);
+    if (hasPrev) navigate('reader', {
+      mangaId: data.mangaId, 
+      chapterIndex: data.chapterIndex - 1, 
+      chapterId: chapters[data.chapterIndex - 1].id
+    })
   }, [hasPrev]);
 
   const handleZoomIn = useCallback(
@@ -106,8 +129,8 @@ const MangaReader = ({ navigate, chapter_index }: MangaReaderProps) => {
   }, []);
 
   const imageElements = useMemo(() => {
-    if (!chapterData?.images) return null;
-    return chapterData.images.map((img, i) => (
+    if (!pageData?.images) return null;
+    return pageData.images.map((img, i) => (
       <div key={i} className="vertical-image-wrapper">
         <img
           className="vertical-image"
@@ -118,7 +141,7 @@ const MangaReader = ({ navigate, chapter_index }: MangaReaderProps) => {
         />
       </div>
     ));
-  }, [chapterData, zoom]);
+  }, [pageData, zoom]);
 
   if (loading)
     return (
@@ -130,11 +153,11 @@ const MangaReader = ({ navigate, chapter_index }: MangaReaderProps) => {
   if (error)
     return (
       <div className="manga-reader-page">
-        <ErrorScreen message={error} retry={fetchChapterImages} />
+        <ErrorScreen message={error} retry={init} />
       </div>
     );
 
-  if (!chapterData?.images?.length)
+  if (!pageData?.images?.length)
     return (
       <div className="manga-reader-page">
         <ErrorScreen message="No images found" />
@@ -146,14 +169,14 @@ const MangaReader = ({ navigate, chapter_index }: MangaReaderProps) => {
       <header className="manga-reader-header">
         <div className="manga-reader-header-content">
           <div className="manga-reader-header-info">
-            {chapterData.manga && (
+            {pageData.manga && (
               <h2 className="manga-reader-manga-title">
-                {chapterData.manga.title}
+                {pageData.manga.title}
               </h2>
             )}
-            {chapterData.chapter && (
+            {pageData.chapter && (
               <p className="manga-reader-manga-title chapter-title">
-                Chapter - {chapterData.chapter.chapter_name}
+                Chapter - {pageData.chapter.chapter_name}
               </p>
             )}
           </div>
@@ -161,7 +184,7 @@ const MangaReader = ({ navigate, chapter_index }: MangaReaderProps) => {
           <div className="toolbar-desktop toolbar-group">
             <button
               className="toolbar-button"
-              onClick={() => navigate("manga", chapterData.manga)}
+              onClick={() => navigate("manga", pageData.manga)}
             >
               <ChevronLeft size={20} /> Return
             </button>
@@ -228,7 +251,7 @@ const MangaReader = ({ navigate, chapter_index }: MangaReaderProps) => {
           <button
             className="toolbar-button"
             onClick={() => {
-              navigate("manga", chapterData.manga);
+              navigate("manga", pageData.manga);
               setDrawerOpen(false);
             }}
           >
