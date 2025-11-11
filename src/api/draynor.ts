@@ -111,7 +111,14 @@ class MangaAPI {
     offset: number = 0
   ) {
     return await api.get<PaginationResponse<Manga>>(
-      `/mangas/search/complete/?limit=${limit}&offset=${offset}&order=${order}${genre_id ? `&genre_id=${genre_id}` : ''}${title ? `&title=${title}` : ''}`
+      "/mangas/search/complete",
+      {
+        limit,
+        offset,
+        order,
+        title,
+        genre_id
+      }
     )
   }
 
@@ -121,7 +128,10 @@ class MangaAPI {
 
   async getCarrousel(limit = 12, offset = 0) {
     return await api.get<PaginationResponse<MangaPageData>>(
-      `/mangas/page/list/?limit=${limit}&offset=${offset}`
+      "/mangas/page/list", {
+        limit,
+        offset
+      }
     )
   }
 
