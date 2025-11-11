@@ -235,7 +235,7 @@ class MangaRequestAPI {
 
 class GenreAPI {
   async getGenres(limit: number = 256, offset: number = 0): Promise<PaginationResponse<Genre>> {
-    return await api.get<PaginationResponse<Genre>>("/genres", { limit, offset });
+    return await api.get<PaginationResponse<Genre>>("/mangas/genres", { limit, offset });
   }
 }
 
