@@ -135,7 +135,7 @@ const MangaReader = ({ navigate, data }: MangaReaderProps) => {
   useEffect(() => {
     if (!pageData?.images) return;
 
-    const preloadImages = pageData.images.slice(0, 6).map((img) => {
+    const preloadImages = pageData.images.slice(0, 3).map((img) => {
       const link = document.createElement("link");
       link.rel = "preload";
       link.as = "image";
@@ -233,8 +233,7 @@ const MangaReader = ({ navigate, data }: MangaReaderProps) => {
       chapterIndex: data.chapterIndex - 1,
     });
   }, [hasPrev, data, chapters, navigate]);
-
-  // Memoizar elementos de imagem com otimizações
+  
   const imageElements = useMemo(() => {
     if (!pageData?.images) return null;
 

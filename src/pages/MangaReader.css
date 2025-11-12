@@ -174,7 +174,7 @@
 }
 
 .main {
-  padding: 2rem 1rem;  
+  padding: 0.5rem 0.5rem;
 }
 
 .vertical-container {
@@ -198,7 +198,6 @@
   max-width: 100%;
   height: auto;
   transition: width 0.2s;
-  margin-bottom: 12px;  
   border-radius: 4px;
 }
 

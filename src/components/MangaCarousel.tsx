@@ -1,8 +1,9 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import "./MangaCarousel.css";
 import type { PageType, Manga } from "../types";
 import { draynorApi } from "../api/draynor";
 import { useMangaCarousel } from "../context/MangaCarouselContext";
+
 
 const ArrowLeft = () => (
   <svg
@@ -44,44 +45,67 @@ const MangaCarousel = ({ navigate }: MangaCarouselProps) => {
   const { mangas, setMangas } = useMangaCarousel();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);  
 
   const viewportRef = useRef<HTMLDivElement>(null);
   const sliderRef = useRef<HTMLDivElement>(null);
+  const scrollTimeoutRef = useRef<any>(null);
+  const autoplayTimerRef = useRef<any>(null);
 
-  // Busca de dados
   useEffect(() => {
-    const init = async () => {
-      await draynorApi.mangas
-        .getCarrousel()
-        .then((data) => setMangas(data.results))
-        .catch(console.error);
-    };
-
     if (mangas.length > 0) {
+      setIsLoading(false);
       return;
     }
-    init();
-  }, []);
 
-  // Sincroniza o scroll manual com os "dots"
+    let isMounted = true;
+
+    const init = async () => {
+      try {
+        const data = await draynorApi.mangas.getCarrousel();
+        if (isMounted) {
+          setMangas(data.results);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error(error);
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    init();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [mangas.length, setMangas]);
+
   useEffect(() => {
     const viewport = viewportRef.current;
     if (!viewport) return;
-    let scrollTimeout: any;
 
     const handleScroll = () => {
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+
+      scrollTimeoutRef.current = setTimeout(() => {
         const newIndex = Math.round(viewport.scrollLeft / viewport.clientWidth);
-        if (newIndex !== activeIndex) {
-          setActiveIndex(newIndex);
-        }
+        setActiveIndex((prev) => (newIndex !== prev ? newIndex : prev));
       }, 100);
     };
 
-    viewport.addEventListener("scroll", handleScroll);
-    return () => viewport.removeEventListener("scroll", handleScroll);
-  }, [activeIndex]);
+    viewport.addEventListener("scroll", handleScroll, { passive: true });
+    
+    return () => {
+      viewport.removeEventListener("scroll", handleScroll);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const scrollToSlide = useCallback((index: number) => {
     const viewport = viewportRef.current;
@@ -89,10 +113,8 @@ const MangaCarousel = ({ navigate }: MangaCarouselProps) => {
     if (!viewport || !slider || !slider.children[index]) return;
 
     const slide = slider.children[index] as HTMLElement;
-    const scrollLeft = slide.offsetLeft;
-
     viewport.scrollTo({
-      left: scrollLeft,
+      left: slide.offsetLeft,
       behavior: "smooth",
     });
 
@@ -111,35 +133,96 @@ const MangaCarousel = ({ navigate }: MangaCarouselProps) => {
     scrollToSlide(newIndex);
   }, [activeIndex, mangas.length, scrollToSlide]);
 
-  const handleDotClick = (index: number) => {
+  const handleDotClick = useCallback((index: number) => {
     scrollToSlide(index);
-  };
+  }, [scrollToSlide]);
 
+  // Autoplay otimizado
   useEffect(() => {
     if (isHovering || mangas.length === 0) {
+      if (autoplayTimerRef.current) {
+        clearInterval(autoplayTimerRef.current);
+      }
       return;
     }
 
-    const timer = setInterval(() => {
+    autoplayTimerRef.current = setInterval(() => {
       handleNext();
     }, 4000);
 
-    return () => clearInterval(timer);
+    return () => {
+      if (autoplayTimerRef.current) {
+        clearInterval(autoplayTimerRef.current);
+      }
+    };
   }, [isHovering, handleNext, mangas.length]);
 
-  const handleNavigate = (manga: Manga) => {
+  const handleNavigate = useCallback((manga: Manga) => {
     navigate("manga", manga);
-  };
+  }, [navigate]);
 
-  const truncateDescription = (text: string, maxLength: number = 200) => {
+  const truncateDescription = useCallback((text: string, maxLength: number = 200) => {
     if (text.length <= maxLength) return text;
     return `${text.substring(0, maxLength)}...`;
-  };
+  }, []);
+
+  const slides = useMemo(() => {
+    return mangas.map((pageData) => (
+      <div
+        key={pageData.manga.id}
+        className="manga-slide"
+        onClick={() => handleNavigate(pageData.manga)}
+      >
+        <div
+          className="slide-background"
+          style={{
+            backgroundImage: `url(${pageData.manga.cover_image_url})`,
+          }}
+        />
+        <div className="slide-overlay" />
+        <div className="slide-content">
+          <div className="slide-cover">
+            <img
+              src={pageData.manga.cover_image_url}
+              alt={pageData.manga.title}
+              loading="lazy"
+            />
+          </div>
+          <div className="slide-info">
+            <h2>{pageData.manga.title}</h2>
+            {pageData.authors.length > 0 && (
+              <div className="slide-meta">
+                <span>
+                  {pageData.authors.map((a) => a.author_name).join(", ")}
+                </span>
+              </div>
+            )}
+            <div className="slide-genres">
+              {pageData.genres.slice(0, 5).map((genre) => (
+                <span key={genre.id} className="genre-tag" style={{backgroundColor: pageData.manga.color}} >
+                  {genre.genre}
+                </span>
+              ))}
+            </div>
+            <p className="slide-description">
+              {pageData.manga.descr
+                ? truncateDescription(pageData.manga.descr)
+                : "Sem descrição disponível."}
+            </p>
+          </div>
+        </div>
+      </div>
+    ));
+  }, [mangas, handleNavigate, truncateDescription]);
+
+  if (isLoading) {
+    return (
+      <div className="manga-carousel-container manga-carousel-loading" />
+    );
+  }
 
   if (mangas.length === 0) {
-    return (
-      <div className="manga-carousel-container manga-carousel-loading"></div>
-    );
+    return null;
   }
 
   return (
@@ -150,64 +233,7 @@ const MangaCarousel = ({ navigate }: MangaCarouselProps) => {
     >
       <div className="manga-carousel-viewport" ref={viewportRef}>
         <div className="manga-carousel-slider" ref={sliderRef}>
-          {mangas.map((pageData) => (
-            <div
-              key={pageData.manga.id}
-              className="manga-slide"
-              onClick={() => handleNavigate(pageData.manga)}
-            >
-              <div
-                className="slide-background"
-                style={{
-                  backgroundImage: `url(${pageData.manga.cover_image_url})`,
-                }}
-              ></div>
-              <div className="slide-overlay"></div>
-              <div className="slide-content">
-                <div className="slide-cover">
-                  <img
-                    src={pageData.manga.cover_image_url}
-                    alt={pageData.manga.title}
-                  />
-                </div>
-                <div className="slide-info">
-                  <h2>{pageData.manga.title}</h2>
-                  <div className="slide-meta">
-                    {pageData.authors.length > 0 && (
-                      <>
-                        <span>
-                          {pageData.authors
-                            .map((a) => a.author_name)
-                            .join(", ")}
-                        </span>
-                      </>
-                    )}
-                  </div>
-                  <div className="slide-genres">
-                    {pageData.genres.slice(0, 5).map((genre) => (
-                      <span key={genre.id} className="genre-tag">
-                        {genre.genre}
-                      </span>
-                    ))}
-                  </div>
-                  <p className="slide-description">
-                    {pageData.manga.descr
-                      ? truncateDescription(pageData.manga.descr)
-                      : "Sem descrição disponível."}
-                  </p>
-                  <button
-                    className="slide-read-button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleNavigate(pageData.manga);
-                    }}
-                  >
-                    Read
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
+          {slides}
         </div>
       </div>
 
