@@ -50,5 +50,9 @@
     padding: 1.5rem 1rem;
     font-size: 0.9rem;
   }
+
+  .footer-content {
+    justify-content: center;
+  }
   
 }

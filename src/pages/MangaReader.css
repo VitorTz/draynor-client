@@ -1,126 +1,147 @@
-/* ========== Layout ========== */
-.manga-reader-page {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background: #111;
-  color: #eee;
-  overflow: hidden;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* Header */
+.manga-reader-page {
+  min-height: 100vh;
+  background: #111111;
+  color: white;
+}
+
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #333;
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text,
+.error-text {
+  font-size: 1.125rem;
+}
+
+.retry-button,
+.toolbar-button {
+  background: #333;
+  color: white;
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;  
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  transition: background 0.2s;
+}
+
+.retry-button:hover,
+.toolbar-button:hover:not(:disabled) {
+  background: #444;
+}
+
+.toolbar-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .manga-reader-header {
-  flex-shrink: 0;
-  background: #1a1a1a;
-  border-bottom: 1px solid #333;
-  padding: 0.5rem 1rem;
+  background: #222;  
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  padding: 0.7rem 1rem;
+  top: 0;
+  z-index: 100;
 }
 
 .manga-reader-header-content {
+  max-width: 1400px;
+  margin: 0 auto;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 0.5rem;
-  flex-wrap: nowrap;
-  overflow: hidden;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .manga-reader-header-info {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  flex: 1;
+  min-width: 0;
 }
 
 .manga-reader-manga-title {
-  font-size: 1rem;
+  font-size: 1.25rem;
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: #fff;
 }
 
 .chapter-title {
-  font-size: 0.85rem;
+  font-size: 0.875rem;
   color: #aaa;
+  margin-top: 0.25rem;
 }
 
-/* Toolbar */
-.toolbar-group {
+.toolbar-desktop {
   display: flex;
+  gap: 0.5rem;
   align-items: center;
-  gap: 0.25rem;
 }
 
-.toolbar-button {
-  background: #222;
-  color: #eee;
-  border: 1px solid #333;
-  border-radius: 6px;
-  padding: 0.35rem 0.6rem;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
+.toolbar-mobile-btn {
+  display: none;
   cursor: pointer;
-  transition: background 0.15s ease;
-}
 
-.toolbar-button:hover:not(:disabled) {
-  background: #333;
-}
-
-.toolbar-button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
 }
 
 .zoom-text {
-  min-width: 40px;
+  font-size: 0.875rem;
+  min-width: 50px;
   text-align: center;
 }
 
-/* Mobile menu */
-.toolbar-mobile-btn {
-  display: none;
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 200;
 }
 
-@media (max-width: 768px) {
-  .toolbar-desktop {
-    display: none;
-  }
-  .toolbar-mobile-btn {
-    display: flex;
-    cursor: pointer;
-  }
-  .vertical-container {
-    touch-action: pan-y pinch-zoom;
-  }
-
-  .vertical-image {
-    user-select: none;
-    -webkit-user-drag: none;
-    touch-action: pinch-zoom;
-    will-change: transform;
-  }
-}
-
-/* ========== Drawer ========== */
 .drawer {
   position: fixed;
   top: 0;
-  right: 0;
-  width: 260px;
-  height: 100%;
-  background: #181818;
-  transform: translateX(100%);
-  transition: transform 0.25s ease-in-out;
-  z-index: 15;
+  right: -300px;
+  width: 300px;
+  height: 100vh;
+  background: #222;
+  z-index: 300;
+  transition: right 0.3s;
   display: flex;
   flex-direction: column;
 }
 
 .drawer.open {
-  transform: translateX(0);
+  right: 0;
 }
 
 .drawer-header {
@@ -132,93 +153,130 @@
 }
 
 .drawer-title {
-  font-size: 1rem;
-  color: #fff;
+  font-size: 1.25rem;
+}
+
+.close-button {
+  cursor: pointer;
 }
 
 .drawer-content {
+  padding: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  padding: 1rem;
-}
-
-/* Overlay */
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.25);
-  z-index: 10;
-  backdrop-filter: blur(1px);
-}
-
-/* ========== Reader ========== */
-.main {
-  flex: 1;
+  gap: 0.75rem;
   overflow-y: auto;
-  scroll-behavior: smooth;
-  background: #111;
+}
+
+.drawer-content .toolbar-button {
+  width: 100%;
+  justify-content: space-between;
+}
+
+.main {
+  padding: 2rem 1rem;  
 }
 
 .vertical-container {
+  max-width: 1000px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding-bottom: 2rem;
+  gap: 0.5rem;
 }
 
 .vertical-image-wrapper {
-  margin: 0.25rem 0;
   display: flex;
   justify-content: center;
-  width: 100%;
+  align-items: center;
+  position: relative;
+  background: #111;
 }
 
 .vertical-image {
   display: block;
   max-width: 100%;
   height: auto;
-  object-fit: contain;
-  transition: width 0.15s ease;
+  transition: width 0.2s;
+  margin-bottom: 12px;  
+  border-radius: 4px;
 }
 
-/* ========== Loading & Error Screens ========== */
-.loading-container,
-.error-container {
-  flex: 1;
+.image-placeholder {
+  background: #222;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
-  color: #aaa;
+  justify-content: center;
 }
 
-.spinner {
-  width: 36px;
-  height: 36px;
-  border: 4px solid #333;
-  border-top-color: #aaa;
+
+.skeleton-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+
+.scroll-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  background: #333;
+  color: white;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.2s;
 }
 
-@keyframes spin {
+.scroll-to-top:hover {
+  background: #555;
+  transform: scale(1.1);
+}
+
+@keyframes shimmer {
   to {
-    transform: rotate(360deg);
+    left: 100%;
   }
 }
 
-.retry-button {
-  margin-top: 1rem;
-  background: #222;
-  color: #eee;
-  border: 1px solid #444;
-  border-radius: 6px;
-  padding: 0.4rem 0.8rem;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
+@media (max-width: 768px) {
 
-.retry-button:hover {
-  background: #333;
+  .scroll-to-top {
+    bottom: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    background-color: rgba(41, 42, 53, 0.6);
+  }
+
+  .manga-reader-header {
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px    
+  }
+
+  .toolbar-desktop {
+    display: none;
+  }
+
+  .toolbar-mobile-btn {
+    display: block;
+  }
+
+  .manga-reader-manga-title {
+    font-size: 1rem;
+  }
 }
