@@ -16,6 +16,9 @@ const ArrowRight = () => (
   </svg>
 );
 
+const IS_PRODUCTION = import.meta.env.VITE_ENV === "PROD"
+
+
 interface MangaCarouselProps {
   navigate: (pageType: PageType, data?: any) => void;
 }

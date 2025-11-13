@@ -125,6 +125,14 @@ export interface MangaPageData {
 
 }
 
+export interface MangaCarouselItem {
+  
+  manga: Manga    
+  genres: Genre[]
+  authors: MangaAuthor[]
+
+}
+
 
 export interface MangaChapters {
   manga: Manga

@@ -14,6 +14,7 @@ import type {
   ReadingStatusLiteral,
   BugType,
   Genre,
+  MangaCarouselItem,
 } from "../types";
 
 
@@ -127,7 +128,7 @@ class MangaAPI {
   }
 
   async getCarrousel(limit = 12, offset = 0) {
-    return await api.get<PaginationResponse<MangaPageData>>(
+    return await api.get<PaginationResponse<MangaCarouselItem>>(
       "/mangas/page/list", {
         limit,
         offset
