@@ -31,35 +31,35 @@ const SignupPage = ({ navigate }: SignupPageProps) => {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1>Cadastre-se</h1>
+        <h1>Sign Up</h1>
         <form onSubmit={handleSubmit}>
           <input
             type="text"
-            placeholder="Nome de usuário"
+            placeholder="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
           />
           <input
             type="email"
-            placeholder="Email"
+            placeholder="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
           <input
             type="password"
-            placeholder="Senha"
+            placeholder="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
           {error && <div className="error-message">{error}</div>}
-          <button type="submit">Cadastrar</button>
+          <button type="submit">Sign Up</button>
         </form>
         <p>
-          Já tem uma conta?{' '}
-          <a onClick={() => navigate('login')}>Entre</a>
+          Already have an account.?{' '}
+          <a onClick={() => navigate('login')}>Sign In</a>
         </p>
       </div>
     </div>

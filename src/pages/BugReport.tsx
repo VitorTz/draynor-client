@@ -116,7 +116,7 @@ const BugReport = () => {
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Descreva o bug em detalhes, como reproduzi-lo, o que esperava acontecer, etc..."
+              placeholder="Describe the bug in detail, how to reproduce it, what you expected to happen, etc."
               rows={8}
               maxLength={1000}
               disabled={isSubmitting}

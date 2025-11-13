@@ -1,12 +1,4 @@
-import {
-  Search,
-  User,
-  Menu,
-  X,
-  Library,
-  Bug,
-  Mail,
-} from "lucide-react";
+import { Search, User, Menu, X, Library, Bug, Mail } from "lucide-react";
 import type { PageType, Manga } from "../types";
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
@@ -133,14 +125,17 @@ const Header = ({ navigate }: HeaderProps) => {
             >
               {user ? (
                 <div className="user-menu" ref={userMenuRef}>
-                  <button
-                    onClick={() => navigate('account')}
-                  >
+                  <button onClick={() => navigate("account")}>
                     <User size={18} /> {user.username}
                   </button>
                 </div>
               ) : (
-                <button onClick={() => navigate("login")}>
+                <button
+                  onClick={() => {
+                    navigate("login");
+                    setHamburgerOpen(false);
+                  }}
+                >
                   <User size={18} />
                   Login
                 </button>

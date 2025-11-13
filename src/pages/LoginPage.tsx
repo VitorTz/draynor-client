@@ -22,14 +22,14 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigate }) => {
     if (success) {
       navigate('home');
     } else {
-      setError('Email ou senha inválidos');
+      setError('Invalid email or password.');
     }
   };
 
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1>Entrar</h1>
+        <h1>Sign In</h1>
         <form onSubmit={handleSubmit}>
           <input
             type="email"
@@ -40,17 +40,17 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigate }) => {
           />
           <input
             type="password"
-            placeholder="Senha"
+            placeholder="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
           {error && <div className="error-message">{error}</div>}
-          <button type="submit">Entrar</button>
+          <button type="submit">Login</button>
         </form>
         <p>
-          Não tem uma conta?{' '}
-          <a onClick={() => navigate('signup')}>Cadastre-se</a>
+          Don’t have an account?{' '}
+          <a onClick={() => navigate('signup')}>Sign up.</a>
         </p>
       </div>
     </div>
