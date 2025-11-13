@@ -14,7 +14,7 @@ const SearchPage = ({ navigate }: SearchPageProps) => {
   const [query, setQuery] = useState("");
   const { genres, setGenres } = useGenres();
   const [genreId, setGenreId] = useState<number | null>(null);
-  const [order, setOrder] = useState<"ASC" | "DESC">("DESC");
+  const [order, setOrder] = useState<"ASC" | "DESC">("ASC");
   const [results, setResults] = useState<Manga[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -92,8 +92,8 @@ const SearchPage = ({ navigate }: SearchPageProps) => {
           value={order}
           onChange={(e) => setOrder(e.target.value as "ASC" | "DESC")}
         >
-          <option value="DESC">Newest</option>
-          <option value="ASC">Oldest</option>
+          <option value="ASC">Ascending order</option>
+          <option value="DESC">Descending order</option>
         </select>
 
         <button type="submit">Search</button>

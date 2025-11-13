@@ -1,7 +1,6 @@
 .manga-request-page {
   min-height: calc(100vh - 80px);
   background: var(--bg);
-  padding: 2rem;
 }
 
 .manga-request-container {
@@ -194,10 +193,7 @@
   color: var(--primary);
 }
 
-@media (max-width: 768px) {
-  .manga-request-page {
-    padding: 1rem;
-  }
+@media (max-width: 768px) {  
 
   .manga-request-header h1 {
     font-size: 2rem;
@@ -223,9 +219,7 @@
 }
 
 @media (max-width: 520px) {
-  .manga-request-page {
-    padding: 0.5rem;
-  }
+  
 
   .manga-request-header {
     margin-bottom: 2rem;

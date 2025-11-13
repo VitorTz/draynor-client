@@ -1,7 +1,6 @@
 .bug-report-page {
   min-height: calc(100vh - 80px);
   background: var(--bg);
-  padding: 2rem;
 }
 
 .bug-report-container {
@@ -208,9 +207,6 @@
 }
 
 @media (max-width: 768px) {
-  .bug-report-page {
-    padding: 1rem;
-  }
 
   .bug-report-header h1 {
     font-size: 2rem;
@@ -236,9 +232,7 @@
 }
 
 @media (max-width: 520px) {
-  .bug-report-page {
-    padding: 0.5rem;
-  }
+  
 
   .bug-report-header {
     margin-bottom: 2rem;
