@@ -184,26 +184,17 @@ const MangaCarousel = ({ navigate }: MangaCarouselProps) => {
   }, []);
 
 
+  // Para modificar a cor do texto dado uma cor de fundo
   const getContrastColor = useCallback((hexColor: string): string => {
     if (!hexColor) return "#ffffff";
-    
-    // Remove # se existir
     const hex = hexColor.replace("#", "");
-    
-    // Converte para RGB
     const r = parseInt(hex.substring(0, 2), 16);
     const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
-    
-    // Calcula luminosidade relativa (fórmula WCAG)
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    
-    // Se a cor for clara (luminosidade > 0.5), usa texto escuro
-    // Se for escura, usa texto branco
+    const b = parseInt(hex.substring(4, 6), 16);    
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;    
     return luminance > 0.5 ? "#1e1e1e" : "#ffffff";
   }, []);
-
-  // Slides memoizados com otimização
+  
   const slides = useMemo(() => {
     return mangas.map((pageData, index) => {
       const isActive = index === activeIndex;
@@ -238,7 +229,7 @@ const MangaCarousel = ({ navigate }: MangaCarouselProps) => {
               {pageData.authors.length > 0 && (
                 <div className="slide-meta">
                   <span>
-                    {pageData.authors.map((a) => a.author_name).join(", ")}
+                    {pageData.authors.map((a) => `${a.author_name} (${a.role})`).join(", ")}
                   </span>
                 </div>
               )}
@@ -288,14 +279,14 @@ const MangaCarousel = ({ navigate }: MangaCarouselProps) => {
       <button
         className="carousel-arrow prev"
         onClick={handlePrev}
-        aria-label="Slide anterior"
+        aria-label="Previous slide"
       >
         <ArrowLeft />
       </button>
       <button
         className="carousel-arrow next"
         onClick={handleNext}
-        aria-label="Próximo slide"
+        aria-label="Next slide"
       >
         <ArrowRight />
       </button>
@@ -305,7 +296,7 @@ const MangaCarousel = ({ navigate }: MangaCarouselProps) => {
             key={index}
             className={`carousel-dot ${index === activeIndex ? "active" : ""}`}
             onClick={() => handleDotClick(index)}
-            aria-label={`Ir para o slide ${index + 1}`}
+            aria-label={`Go to slide ${index + 1}`}
           />
         ))}
       </div>
