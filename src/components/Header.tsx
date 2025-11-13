@@ -125,7 +125,10 @@ const Header = ({ navigate }: HeaderProps) => {
             >
               {user ? (
                 <div className="user-menu" ref={userMenuRef}>
-                  <button onClick={() => navigate("account")}>
+                  <button onClick={() => {
+                    navigate("account");
+                    setHamburgerOpen(false);
+                    }}>
                     <User size={18} /> {user.username}
                   </button>
                 </div>

@@ -4,36 +4,15 @@ import type { PageType, Manga } from "../types";
 import { draynorApi } from "../api/draynor";
 import { useMangaCarousel } from "../context/MangaCarouselContext";
 
-
 const ArrowLeft = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={3}
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M15.75 19.5L8.25 12l7.5-7.5"
-    />
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
   </svg>
 );
 
 const ArrowRight = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={3}
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M8.25 4.5l7.5 7.5-7.5 7.5"
-    />
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
   </svg>
 );
 
@@ -45,13 +24,12 @@ const MangaCarousel = ({ navigate }: MangaCarouselProps) => {
   const { mangas, setMangas } = useMangaCarousel();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);  
+  const [isLoading, setIsLoading] = useState(true);
 
-  const viewportRef = useRef<HTMLDivElement>(null);
   const sliderRef = useRef<HTMLDivElement>(null);
-  const scrollTimeoutRef = useRef<any>(null);
-  const autoplayTimerRef = useRef<any>(null);
+  const autoplayRef = useRef<any>(null);
 
+  // Load data
   useEffect(() => {
     if (mangas.length > 0) {
       setIsLoading(false);
@@ -59,7 +37,6 @@ const MangaCarousel = ({ navigate }: MangaCarouselProps) => {
     }
 
     let isMounted = true;
-
     const init = async () => {
       try {
         const data = await draynorApi.mangas.getCarrousel();
@@ -67,57 +44,22 @@ const MangaCarousel = ({ navigate }: MangaCarouselProps) => {
           setMangas(data.results);
           setIsLoading(false);
         }
-      } catch (error) {
-        console.error(error);
-        if (isMounted) {
-          setIsLoading(false);
-        }
+      } catch (err) {
+        console.error(err);
+        if (isMounted) setIsLoading(false);
       }
     };
-
     init();
-
     return () => {
       isMounted = false;
     };
   }, [mangas.length, setMangas]);
 
-  useEffect(() => {
-    const viewport = viewportRef.current;
-    if (!viewport) return;
-
-    const handleScroll = () => {
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-
-      scrollTimeoutRef.current = setTimeout(() => {
-        const newIndex = Math.round(viewport.scrollLeft / viewport.clientWidth);
-        setActiveIndex((prev) => (newIndex !== prev ? newIndex : prev));
-      }, 100);
-    };
-
-    viewport.addEventListener("scroll", handleScroll, { passive: true });
-    
-    return () => {
-      viewport.removeEventListener("scroll", handleScroll);
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-    };
-  }, []);
-
+  // Core navigation logic
   const scrollToSlide = useCallback((index: number) => {
-    const viewport = viewportRef.current;
     const slider = sliderRef.current;
-    if (!viewport || !slider || !slider.children[index]) return;
-
-    const slide = slider.children[index] as HTMLElement;
-    viewport.scrollTo({
-      left: slide.offsetLeft,
-      behavior: "smooth",
-    });
-
+    if (!slider) return;
+    slider.style.transform = `translateX(-${index * 100}%)`;
     setActiveIndex(index);
   }, []);
 
@@ -137,33 +79,76 @@ const MangaCarousel = ({ navigate }: MangaCarouselProps) => {
     scrollToSlide(index);
   }, [scrollToSlide]);
 
-  // Autoplay otimizado
-  useEffect(() => {
-    if (isHovering || mangas.length === 0) {
-      if (autoplayTimerRef.current) {
-        clearInterval(autoplayTimerRef.current);
-      }
-      return;
-    }
-
-    autoplayTimerRef.current = setInterval(() => {
-      handleNext();
-    }, 4000);
-
-    return () => {
-      if (autoplayTimerRef.current) {
-        clearInterval(autoplayTimerRef.current);
-      }
-    };
-  }, [isHovering, handleNext, mangas.length]);
-
   const handleNavigate = useCallback((manga: Manga) => {
     navigate("manga", manga);
   }, [navigate]);
 
-  const truncateDescription = useCallback((text: string, maxLength: number = 200) => {
-    if (text.length <= maxLength) return text;
-    return `${text.substring(0, maxLength)}...`;
+  // Touch swipe control
+  useEffect(() => {
+    const slider = sliderRef.current;
+    if (!slider) return;
+
+    let startX = 0;
+    let currentX = 0;
+    let isDragging = false;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      startX = e.touches[0].clientX;
+      isDragging = true;
+      slider.style.transition = "none";
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isDragging) return;
+      currentX = e.touches[0].clientX;
+      const diff = currentX - startX;
+      slider.style.transform = `translateX(calc(-${activeIndex * 100}% + ${diff}px))`;
+    };
+
+    const handleTouchEnd = () => {
+      if (!isDragging) return;
+      isDragging = false;
+      slider.style.transition = "transform 0.4s ease";
+      const diff = currentX - startX;
+      const threshold = 50;
+
+      if (Math.abs(diff) > threshold) {
+        if (diff > 0) handlePrev();
+        else handleNext();
+      } else {
+        scrollToSlide(activeIndex);
+      }
+    };
+
+    slider.addEventListener("touchstart", handleTouchStart, { passive: true });
+    slider.addEventListener("touchmove", handleTouchMove, { passive: true });
+    slider.addEventListener("touchend", handleTouchEnd);
+
+    return () => {
+      slider.removeEventListener("touchstart", handleTouchStart);
+      slider.removeEventListener("touchmove", handleTouchMove);
+      slider.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [activeIndex, handleNext, handlePrev, scrollToSlide]);
+
+  // Autoplay
+  useEffect(() => {
+    if (isHovering || mangas.length === 0) {
+      if (autoplayRef.current) clearInterval(autoplayRef.current);
+      return;
+    }
+
+    autoplayRef.current = setInterval(() => {
+      handleNext();
+    }, 4000);
+
+    return () => {
+      if (autoplayRef.current) clearInterval(autoplayRef.current);
+    };
+  }, [isHovering, handleNext, mangas.length]);
+
+  const truncateDescription = useCallback((text: string, maxLength = 200) => {
+    return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
   }, []);
 
   const slides = useMemo(() => {
@@ -175,31 +160,23 @@ const MangaCarousel = ({ navigate }: MangaCarouselProps) => {
       >
         <div
           className="slide-background"
-          style={{
-            backgroundImage: `url(${pageData.manga.cover_image_url})`,
-          }}
+          style={{ backgroundImage: `url(${pageData.manga.cover_image_url})` }}
         />
         <div className="slide-overlay" />
         <div className="slide-content">
           <div className="slide-cover">
-            <img
-              src={pageData.manga.cover_image_url}
-              alt={pageData.manga.title}
-              loading="lazy"
-            />
+            <img src={pageData.manga.cover_image_url} alt={pageData.manga.title} loading="lazy" />
           </div>
           <div className="slide-info">
             <h2>{pageData.manga.title}</h2>
             {pageData.authors.length > 0 && (
               <div className="slide-meta">
-                <span>
-                  {pageData.authors.map((a) => a.author_name).join(", ")}
-                </span>
+                <span>{pageData.authors.map((a) => a.author_name).join(", ")}</span>
               </div>
             )}
             <div className="slide-genres">
               {pageData.genres.slice(0, 5).map((genre) => (
-                <span key={genre.id} className="genre-tag" style={{backgroundColor: pageData.manga.color}} >
+                <span key={genre.id} className="genre-tag" style={{ backgroundColor: pageData.manga.color }}>
                   {genre.genre}
                 </span>
               ))}
@@ -215,15 +192,8 @@ const MangaCarousel = ({ navigate }: MangaCarouselProps) => {
     ));
   }, [mangas, handleNavigate, truncateDescription]);
 
-  if (isLoading) {
-    return (
-      <div className="manga-carousel-container manga-carousel-loading" />
-    );
-  }
-
-  if (mangas.length === 0) {
-    return null;
-  }
+  if (isLoading) return <div className="manga-carousel-container manga-carousel-loading" />;
+  if (mangas.length === 0) return null;
 
   return (
     <div
@@ -231,24 +201,16 @@ const MangaCarousel = ({ navigate }: MangaCarouselProps) => {
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      <div className="manga-carousel-viewport" ref={viewportRef}>
+      <div className="manga-carousel-viewport">
         <div className="manga-carousel-slider" ref={sliderRef}>
           {slides}
         </div>
       </div>
 
-      <button
-        className="carousel-arrow prev"
-        onClick={handlePrev}
-        aria-label="Slide anterior"
-      >
+      <button className="carousel-arrow prev" onClick={handlePrev} aria-label="Slide anterior">
         <ArrowLeft />
       </button>
-      <button
-        className="carousel-arrow next"
-        onClick={handleNext}
-        aria-label="Próximo slide"
-      >
+      <button className="carousel-arrow next" onClick={handleNext} aria-label="Próximo slide">
         <ArrowRight />
       </button>
 
