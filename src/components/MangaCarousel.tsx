@@ -4,8 +4,11 @@ import { draynorApi } from "../api/draynor";
 import "./MangaCarousel.css";
 
 
-const IS_PRODUCTION = import.meta.env.VITE_ENV === "PROD";
-const CAROUSEL_TIMER = IS_PRODUCTION ? 8000 : 4000;
+// const IS_PRODUCTION = import.meta.env.VITE_ENV === "PROD";
+// const CAROUSEL_TIMER = IS_PRODUCTION ? 8000 : 4000;
+
+
+const CAROUSEL_TIMER = 4000;
 
 
 const MangaCarousel = () => {

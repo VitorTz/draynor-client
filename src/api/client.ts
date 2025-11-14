@@ -5,9 +5,10 @@ import axios, {
 } from 'axios';
 
 
-const IS_PRODUCTION = import.meta.env.VITE_ENV === "PROD"
-const BASE_URL = IS_PRODUCTION ? "https://draynor-api.fly.dev/api/v1" : "http://localhost:8000/api/v1"
+// const IS_PRODUCTION = import.meta.env.VITE_ENV === "PROD"
+// const BASE_URL = IS_PRODUCTION ? "https://draynor-api.fly.dev/api/v1" : "http://localhost:8000/api/v1"
 
+const BASE_URL = "https://draynor-api.fly.dev/api/v1"
 
 class ApiClient {
 
