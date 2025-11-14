@@ -8,10 +8,12 @@ import './MangaPage.css';
 import { useChapterList } from '../context/ChapterListContext';
 import Comments from '../components/Comments';
 
+
 interface MangaPageProps {
   navigate: (page: PageType, data?: any) => void;
   manga_id: number;
 }
+
 
 const MangaPage = ({ navigate, manga_id }: MangaPageProps) => {
   const { chapters, setChapters, setIndex, setManga: setCurrentManga } = useChapterList();

@@ -17,7 +17,6 @@ const HomePage = ({ navigate }: HomePageProps) => {
 
   const [popularMangas, setPopularMangas] = useState<Manga[]>([]);
   const [latestMangas, setLatestMangas] = useState<Manga[]>([]);
-  const [randomMangas, setRandomMangas] = useState<Manga[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,15 +25,13 @@ const HomePage = ({ navigate }: HomePageProps) => {
 
   const loadData = async () => {
     try {
-      const [popularRes, latestRes, randomRes] = await Promise.all([
+      const [popularRes, latestRes] = await Promise.all([
         draynorApi.mangas.getPopular(PAGE_LIMIT),
-        draynorApi.mangas.getLatest(PAGE_LIMIT),
-        draynorApi.mangas.getRandom(PAGE_LIMIT)
+        draynorApi.mangas.getLatest(PAGE_LIMIT)
       ]);
       
       setPopularMangas(popularRes.results || []);
       setLatestMangas(latestRes.results || []);
-      setRandomMangas(randomRes.results || [])
     } catch (error) {
       console.error('Failed to load data:', error);
     } finally {
