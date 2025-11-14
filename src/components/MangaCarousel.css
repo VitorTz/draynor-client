@@ -181,6 +181,11 @@
 }
 
 
+.mobile-action-container {
+  display: none;
+  padding: 1rem;
+}
+
 button:hover {
   opacity: 0.9;
 }
@@ -217,6 +222,7 @@ button:active {
 }
 
 @media (max-width: 520px) {
+
   .carousel-content {
     padding: 24px !important;
     gap: 24px !important;
@@ -248,17 +254,42 @@ button:active {
     width: 100% !important;
   }
 
-  .nav-button-left,
-  .nav-button-right {
+
+  .desktop-button {
+    display: none;
+  }
+  
+  .mobile-action-container {
+    display: flex;
+    width: 100%;
+    display: flex;
+    position: absolute;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 8px;
+    align-items: center;
+  }
+
+  .mobile-action-container .carousel-read-button {
+    flex: 1;
+  }
+
+  .mobile-action-container .carousel-nav-button {
+    position: static !important;
+    transform: none !important;
+    box-shadow: 0 2px 8px rgba(232, 116, 79, 0.1);
+  }
+
+  .desktop-nav-button {
+    display: none;
+  }
+
+  .dots-bottom {
     display: none;
   }
 
   .dots-top {
     display: flex;
-  }
-
-  .dots-bottom {
-    display: none;
   }
 
 }
