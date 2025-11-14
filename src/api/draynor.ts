@@ -15,6 +15,8 @@ import type {
   BugType,
   Genre,
   MangaCarouselItem,
+  Comment,
+  CommentCreate
 } from "../types";
 
 
@@ -241,6 +243,23 @@ class GenreAPI {
 }
 
 
+class CommentsAPI {
+
+  async getRoots(manga_id: number, limit: number = 64, offset: number = 0): Promise<PaginationResponse<Comment>> {
+    return await api.get<PaginationResponse<Comment>> ("/comments/manga", { manga_id, limit, offset })
+  }
+
+  async create(manga_id: number, comment: string): Promise<Comment> {
+    return await api.post("/comments", { manga_id, comment, parent_id: null })
+  }
+
+  async reply(manga_id: number, comment: string, parent_id: number): Promise<Comment> {
+    return await api.post("/comments/reply", { manga_id, comment, parent_id })
+  }
+
+}
+
+
 class DraynorApi {
   readonly auth = new AuthAPI();
   readonly user = new UserAPI();
@@ -251,6 +270,7 @@ class DraynorApi {
   readonly bugs = new BugAPI();
   readonly mangaRequests = new MangaRequestAPI();
   readonly genres = new GenreAPI();
+  readonly comments = new CommentsAPI();
 }
 
 

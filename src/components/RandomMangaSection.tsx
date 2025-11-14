@@ -13,18 +13,14 @@ interface RandomMangaSectionProps {
   navigate: (page: PageType, data?: any) => void;
 }
 
-const RandomMangaSection = ({
-  title = "Random",
-  limit = 12,
-  navigate,
-}: RandomMangaSectionProps) => {
+const RandomMangaSection = ({ navigate }: RandomMangaSectionProps) => {
   const [mangas, setMangas] = useState<Manga[]>([]);
   const [loading, setLoading] = useState(false);
 
   const fetchRandomMangas = async () => {
     try {
       setLoading(true);
-      const response = await draynorApi.mangas.getRandom(limit);
+      const response = await draynorApi.mangas.getRandom(12);
       setMangas(response.results);
     } catch (err) {
       console.error("Failed to load random mangas", err);
@@ -40,7 +36,7 @@ const RandomMangaSection = ({
   return (
     <section className="manga-section">
       <div className="manga-section-header">
-        <h2>{title}</h2>
+        <h2>Random</h2>
         <button
           className="refresh-random-button"
           onClick={fetchRandomMangas}

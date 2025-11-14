@@ -2,16 +2,21 @@ import { useState, useEffect } from "react";
 import { useMangaCarousel } from "../context/MangaCarouselContext";
 import { draynorApi } from "../api/draynor";
 import "./MangaCarousel.css";
-
+import type { PageType } from "../types";
 
 // const IS_PRODUCTION = import.meta.env.VITE_ENV === "PROD";
 // const CAROUSEL_TIMER = IS_PRODUCTION ? 8000 : 4000;
 
+const CAROUSEL_TIMER = 8000;
 
-const CAROUSEL_TIMER = 4000;
+
+interface MangaCarouselProps {
+  navigate: (page: PageType, data?: any) => void
+}
 
 
-const MangaCarousel = () => {
+const MangaCarousel = ( { navigate }: MangaCarouselProps ) => {
+
   const { mangas, setMangas } = useMangaCarousel();
   const [isPaused, setIsPaused] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -75,6 +80,16 @@ const MangaCarousel = () => {
     }
   };
 
+  const limitWords = (text: string | undefined | null, maxWords: number = 32): string => {
+    if (!text) return "";
+
+    const words = text.trim().split(/\s+/);
+
+    if (words.length <= maxWords) return text;
+
+    return words.slice(0, maxWords).join(" ") + "...";
+  };  
+
   return (
     <div className="container">
       <div
@@ -102,8 +117,6 @@ const MangaCarousel = () => {
           >
             ‹
           </button>
-
-          {/* <button className="read-button carousel-read-button">Read Now</button> */}
 
           <button
             className="nav-button nav-button-right carousel-nav-button carousel-nav-button-right"
@@ -140,16 +153,16 @@ const MangaCarousel = () => {
             </div>
 
             <p className="description carousel-description">
-              {current && current.manga.descr!.length > 280
-                ? current.manga.descr!.substring(0, 280) + "..."
-                : current?.manga.descr}
+              {limitWords(current?.manga.descr)}
             </p>
 
             <div className="authors">
               <span className="authors-label">By:</span> {authors}
             </div>
 
-            <button className="read-button carousel-read-button">
+            <button 
+              className="read-button carousel-read-button"
+              onClick={() => navigate('manga', current?.manga)} >
               Read Now
             </button>
           </div>

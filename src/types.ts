@@ -189,6 +189,29 @@ export interface BugReport {
 
 }
 
+export interface Comment {
+  
+  id: number
+  manga_id: number
+  user_id: string
+  comment: string
+  parent_id: number
+  path: string
+  created_at: string
+  total_replies: number
+
+}
+
+
+export interface CommentCreate {
+
+  manga_id: number
+  comment: string
+  parent_id?: number
+
+}
+
+
 
 export type PageType = 'home' | 'library' | 'login' | 'signup' | 'manga' | 'reader' | 'search' | 'bug' | 'request' | 'account' | 'most-popular' | 'latest-mangas';
 

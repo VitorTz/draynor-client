@@ -6,6 +6,7 @@ import { draynorApi } from "../api/draynor";
 import LoadingScreen from '../components/LoadingScreen';
 import './MangaPage.css';
 import { useChapterList } from '../context/ChapterListContext';
+import Comments from '../components/Comments';
 
 interface MangaPageProps {
   navigate: (page: PageType, data?: any) => void;
@@ -162,6 +163,7 @@ const MangaPage = ({ navigate, manga_id }: MangaPageProps) => {
           </div>
         )}
       </div>
+      {/* <Comments manga_id={manga_id} /> */}
     </div>
   );
 };

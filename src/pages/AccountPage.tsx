@@ -93,14 +93,10 @@ const UserProfilePage = ({ navigate }: UserProfilePageProps) => {
     <div
       style={{
         minHeight: "100vh",
-        background: "var(--bg)",
-        padding: "2rem",
-        fontFamily:
-          '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        background: "var(--bg)"      
       }}
     >
-      <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-        {/* Card Principal */}
+      <div style={{ maxWidth: "800px", margin: "0 auto" }}>      
         <div
           style={{
             background: "var(--card-bg)",
@@ -439,12 +435,6 @@ const UserProfilePage = ({ navigate }: UserProfilePageProps) => {
           </div>
         </div>
       </div>
-      <style>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   );
 };
