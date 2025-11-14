@@ -1,3 +1,5 @@
+
+
 .manga-card {
   background: var(--card-bg);
   border: 1px solid var(--border);
@@ -15,13 +17,12 @@
   box-shadow: var(--shadow-md);
 }
 
-/* Capa */
 .manga-cover {
   position: relative;
   width: 100%;
   aspect-ratio: 3 / 4.3;
   background: var(--light);
-  overflow: hidden;
+  overflow: hidden;  
 }
 
 .manga-cover img {

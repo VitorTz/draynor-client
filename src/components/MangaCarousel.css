@@ -34,6 +34,8 @@
   max-width: 280px;
   height: 400px;
   margin: 0 auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: var(--border-radius);
 }
 
 .image {

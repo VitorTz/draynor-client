@@ -24,7 +24,7 @@ const MangaCarousel = ( { navigate }: MangaCarouselProps ) => {
 
   const current = mangas.length > 0 ? mangas[currentIndex] : undefined;
   const authors = current
-    ? current.authors.map((a) => a.author_name).join(", ")
+    ? current.authors.map((a) => `${a.author_name} (${a.role})`).join(", ")
     : [];
 
   useEffect(() => {
