@@ -1,14 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import './MangaCarousel.css'
+import { useState, useEffect } from 'react';
 import { useMangaCarousel } from '../context/MangaCarouselContext';
 import { draynorApi } from '../api/draynor';
+import './MangaCarousel.css'
 
 
-const MangaCarousel: React.FC = () => {
+const MangaCarousel = () => {
+
   const { mangas, setMangas } = useMangaCarousel()
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  
+  const current = mangas.length > 0 ? mangas[currentIndex] : undefined;
+  const authors = current ? current.authors.map(a => a.author_name).join(', ') : [];
   
   useEffect(() => {
     const init = async () => {
@@ -18,15 +21,6 @@ const MangaCarousel: React.FC = () => {
     if (mangas.length === 0) {
       init()
     }
-  }, [mangas])
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   useEffect(() => {
@@ -35,12 +29,13 @@ const MangaCarousel: React.FC = () => {
     }, 4000);
 
     return () => clearInterval(timer);
-  }, [currentIndex]);
+  }, [currentIndex, mangas.length]);
 
   const handleNext = () => {
     setIsTransitioning(true);
     setTimeout(() => {
-      setCurrentIndex((prev) => (prev + 1) % mangas.length);
+      console.log("currentIndex", currentIndex, mangas.length)
+      setCurrentIndex((prev) => mangas.length === 0 ? 0 : (prev + 1) % mangas.length);
       setIsTransitioning(false);
     }, 300);
   };
@@ -48,7 +43,7 @@ const MangaCarousel: React.FC = () => {
   const handlePrev = () => {
     setIsTransitioning(true);
     setTimeout(() => {
-      setCurrentIndex((prev) => (prev - 1 + mangas.length) % mangas.length);
+      setCurrentIndex((prev) => mangas.length === 0 ? 0 : (prev - 1 + mangas.length) % mangas.length);
       setIsTransitioning(false);
     }, 300);
   };
@@ -62,10 +57,7 @@ const MangaCarousel: React.FC = () => {
       }, 300);
     }
   };
-
-  const current = mangas[currentIndex];
-  const authors = current.authors.map(a => a.author_name).join(', ');
-
+  
   return (
     <div className='container'>
       <div className='carousel'>        
@@ -85,20 +77,20 @@ const MangaCarousel: React.FC = () => {
         }} className="content carousel-content">
           <div className="image-container carousel-image-container">
             <img 
-              src={current.manga.cover_image_url} 
-              alt={current.manga.title}
+              src={current?.manga.cover_image_url} 
+              alt={current?.manga.title}
               className='image'
             />
             <div className='status-badge'>
-              {current.manga.status}
+              {current?.manga.status}
             </div>
           </div>
           
           <div className='info'>
-            <h2 className="title carousel-title">{current.manga.title}</h2>
+            <h2 className="title carousel-title">{current?.manga.title}</h2>
             
             <div className='genres'>
-              {current.genres.map((genre) => (
+              {current?.genres.map((genre) => (
                 <span key={genre.id} className='genre-tag'>
                   {genre.genre}
                 </span>
@@ -106,7 +98,7 @@ const MangaCarousel: React.FC = () => {
             </div>
             
             <p className="description carousel-description">
-              {current && current.manga.descr!.length > 280 ? current.manga.descr!.substring(0, 280) + '...'  : current.manga.descr}
+              {current && current.manga.descr!.length > 280 ? current.manga.descr!.substring(0, 280) + '...'  : current?.manga.descr}
             </p>
             
             <div className='authors'>
