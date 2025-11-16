@@ -246,6 +246,7 @@
   transform: scale(1.1);
 }
 
+
 @keyframes shimmer {
   to {
     left: 100%;

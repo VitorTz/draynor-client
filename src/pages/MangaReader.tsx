@@ -18,6 +18,7 @@ import type {
   PageType,
 } from "../types";
 import "./MangaReader.css";
+import { useReadChapters } from "../hooks/useReadChapters";
 
 const LoadingScreen = () => (
   <div className="loading-container">
@@ -120,6 +121,7 @@ interface MangaReaderProps {
 }
 
 const MangaReader = ({ navigate, data }: MangaReaderProps) => {
+  
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [pageData, setPageData] = useState<ChapterImageList | null>(null);
   const [loading, setLoading] = useState(true);
@@ -127,11 +129,12 @@ const MangaReader = ({ navigate, data }: MangaReaderProps) => {
   const [zoom, setZoom] = useState(100);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  
+  const { markAsRead } = useReadChapters()
 
   const hasPrev = data.chapterIndex > 0;
   const hasNext = data.chapterIndex < chapters.length - 1;
-
-  // Preload de imagens adjacentes
+  
   useEffect(() => {
     if (!pageData?.images) return;
 
@@ -144,12 +147,12 @@ const MangaReader = ({ navigate, data }: MangaReaderProps) => {
     });
 
     preloadImages.forEach((link) => document.head.appendChild(link));
-
+    if (pageData.chapter?.id) { markAsRead(pageData.chapter.id) }
     return () => {
       preloadImages.forEach((link) => document.head.removeChild(link));
     };
   }, [pageData]);
-
+  
   useEffect(() => {
     const getChapters = async () => {
       await draynorApi.chapters
@@ -265,25 +268,17 @@ const MangaReader = ({ navigate, data }: MangaReaderProps) => {
     );
   }
 
-  if (!pageData?.images.length) {
-    return (
-      <div className="manga-reader-page">
-        <ErrorScreen message="No images found" />
-      </div>
-    );
-  }
-
   return (
     <div className="manga-reader-page">
       <header className="manga-reader-header">
         <div className="manga-reader-header-content">
           <div className="manga-reader-header-info">
-            {pageData.manga && (
+            {pageData?.manga && (
               <h2 className="manga-reader-manga-title">
                 {pageData.manga.title}
               </h2>
             )}
-            {pageData.chapter && (
+            {pageData?.chapter && (
               <p className="manga-reader-manga-title chapter-title">
                 Chapter - {pageData.chapter.chapter_name}
               </p>
@@ -293,7 +288,7 @@ const MangaReader = ({ navigate, data }: MangaReaderProps) => {
           <div className="toolbar-desktop toolbar-group">
             <button
               className="toolbar-button"
-              onClick={() => navigate("manga", pageData.manga)}
+              onClick={() => navigate("manga", pageData?.manga)}
             >
               <Book size={20} /> Manga Page
             </button>
@@ -360,7 +355,7 @@ const MangaReader = ({ navigate, data }: MangaReaderProps) => {
           <button
             className="toolbar-button"
             onClick={() => {
-              navigate("manga", pageData.manga);
+              navigate("manga", pageData?.manga);
               setDrawerOpen(false);
             }}
           >
@@ -401,15 +396,25 @@ const MangaReader = ({ navigate, data }: MangaReaderProps) => {
         </div>
       </div>
 
-      <main className="main">
-        <div className="vertical-container">{imageElements}</div>
-      </main>
-      <button
-        className="scroll-to-top"
-        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      >
-        <ArrowUp size={16}/>
-      </button>
+      {
+        !pageData?.images.length ? 
+        <div className="manga-reader-page">
+          <ErrorScreen message="No images found" />
+        </div>   
+        :
+        <>
+          <main className="main">
+            <div className="vertical-container">{imageElements}</div>
+          </main>
+          <button
+            className="scroll-to-top"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          >
+            <ArrowUp size={16}/>
+          </button>
+        </>
+      }
+
     </div>
   );
 };

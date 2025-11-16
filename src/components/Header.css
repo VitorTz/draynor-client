@@ -59,7 +59,6 @@
 
 .header-search {
   flex: 1;
-  
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -179,7 +178,7 @@
   color: var(--primary);
 }
 
-.user-menu {
+.user-menu {  
   position: relative;
 }
 

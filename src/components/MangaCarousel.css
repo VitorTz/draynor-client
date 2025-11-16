@@ -195,6 +195,33 @@ button:active {
   transform: scale(0.98);
 }
 
+
+.nav-button:hover {
+  background-color: #FFF1E9;
+  border-color: #E67B5E;
+}
+
+.nav-button:active {
+  transform: translateY(-50%) scale(0.96);
+}
+
+.dot:hover {
+  transform: scale(1.3);
+  border-color: #DC0E0E;
+}
+
+.dot-active {
+  animation: dotPulse 0.8s ease;
+}
+
+@keyframes dotPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+
+
 @media (min-width: 768px) {
   .carousel-content {
     flex-direction: row !important;

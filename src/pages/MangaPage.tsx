@@ -1,4 +1,3 @@
-import { ChevronRight } from 'lucide-react';
 import { useState, useEffect } from "react";
 import { type Genre, type MangaAuthor, type Manga, type PageType } from "../types";
 import { useAuth } from "../context/AuthContext";
@@ -6,7 +5,9 @@ import { draynorApi } from "../api/draynor";
 import LoadingScreen from '../components/LoadingScreen';
 import './MangaPage.css';
 import { useChapterList } from '../context/ChapterListContext';
-import Comments from '../components/Comments';
+import { useReadChapters } from '../hooks/useReadChapters';
+import { ChapterItem } from '../components/ChapterItem';
+import { normalizeAuthorRole } from '../util';
 
 
 interface MangaPageProps {
@@ -16,6 +17,7 @@ interface MangaPageProps {
 
 
 const MangaPage = ({ navigate, manga_id }: MangaPageProps) => {
+
   const { chapters, setChapters, setIndex, setManga: setCurrentManga } = useChapterList();
   const [manga, setManga] = useState<Manga | null>(null);
   const [genres, setGenres] = useState<Genre[]>([]);
@@ -23,6 +25,8 @@ const MangaPage = ({ navigate, manga_id }: MangaPageProps) => {
   const [readingStatus, setReadingStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+
+  const { readChapters } = useReadChapters()
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 40;
@@ -89,7 +93,7 @@ const MangaPage = ({ navigate, manga_id }: MangaPageProps) => {
               <strong>Authors:</strong>{" "}
               {authors.map((a, i) => (
                 <span key={a.author_id}>
-                  {a.author_name} ({a.role})
+                  {a.author_name} ({normalizeAuthorRole(a.role)})
                   {i < authors.length - 1 && ", "}
                 </span>
               ))}
@@ -132,17 +136,15 @@ const MangaPage = ({ navigate, manga_id }: MangaPageProps) => {
       <div className="chapters-list">
         <h2>Chapters</h2>
         {visibleChapters.map((chapter, index) => (
-          <div
-            key={index}
-            className="chapter-item"
-            onClick={() => {
-              setIndex(startIndex + index);
-              navigate('reader', {chapterIndex: startIndex + index, mangaId: manga.id, chapterId: chapter.id});
-            }}
-          >
-            <span>Chapter {chapter.chapter_name}</span>
-            <ChevronRight size={20} className="chapter-chevron" />
-          </div>
+          <ChapterItem
+            chapter={chapter}
+            index={index}
+            manga={manga}
+            navigate={navigate}
+            readChapters={readChapters}
+            setIndex={setIndex}
+            startIndex={startIndex}
+          />
         ))}
 
         {totalPages > 1 && (
@@ -165,7 +167,7 @@ const MangaPage = ({ navigate, manga_id }: MangaPageProps) => {
           </div>
         )}
       </div>
-      {/* <Comments manga_id={manga_id} /> */}
+      
     </div>
   );
 };

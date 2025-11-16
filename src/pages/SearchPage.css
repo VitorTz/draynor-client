@@ -24,7 +24,7 @@
   margin-bottom: 1.5rem;
 }
 
-/* Inputs e Selects */
+
 .search-form input,
 .search-form select {
   padding: 0.6rem 0.8rem;
@@ -44,7 +44,6 @@
   box-shadow: var(--shadow-md);
 }
 
-/* Select com seta customizada */
 .search-form select {
   appearance: none;
   -webkit-appearance: none;
@@ -56,7 +55,6 @@
   padding-right: 2rem;
 }
 
-/* Botão */
 .search-form button {
   padding: 0.6rem 1.2rem;
   border: none;
@@ -106,7 +104,6 @@
 }
 
 
-/* Responsividade */
 @media (max-width: 520px) {
   .search-form {
     flex-direction: column;

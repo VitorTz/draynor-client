@@ -54,7 +54,6 @@ body {
 }
 
 
-/* Main Content */
 .main-content {
   flex: 1;
   max-width: 1400px;
@@ -71,7 +70,7 @@ body {
   padding: 0rem 0rem;
 }
 
-/* Responsive */
+
 @media (min-width: 768px) {
   
   .menu-toggle.mobile {
@@ -87,7 +86,7 @@ body {
   
 }
 
-/* Scrollbar */
+
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -108,14 +107,14 @@ body {
   background: var(--secondary);
 }
 
-/* Smooth scrolling */
+
 @media (prefers-reduced-motion: no-preference) {
   * {
     scroll-behavior: smooth;
   }
 }
 
-/* Text selection */
+
 ::selection {
   background: var(--primary);
   color: white;

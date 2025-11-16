@@ -3,6 +3,8 @@ import { useMangaCarousel } from "../context/MangaCarouselContext";
 import { draynorApi } from "../api/draynor";
 import "./MangaCarousel.css";
 import type { PageType } from "../types";
+import { useIsMobile } from "../hooks/useIsMobile";
+import { normalizeAuthorRole } from "../util";
 
 // const IS_PRODUCTION = import.meta.env.VITE_ENV === "PROD";
 // const CAROUSEL_TIMER = IS_PRODUCTION ? 8000 : 4000;
@@ -22,9 +24,13 @@ const MangaCarousel = ( { navigate }: MangaCarouselProps ) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
+  const isMobile = useIsMobile();
+
+  const MAX_WORDS = isMobile ? 32 : 96;
+
   const current = mangas.length > 0 ? mangas[currentIndex] : undefined;
   const authors = current
-    ? current.authors.map((a) => `${a.author_name} (${a.role})`).join(", ")
+    ? current.authors.map((a) => `${a.author_name} (${normalizeAuthorRole(a.role)})`).join(", ")
     : [];
 
   useEffect(() => {
@@ -153,7 +159,7 @@ const MangaCarousel = ( { navigate }: MangaCarouselProps ) => {
             </div>
 
             <p className="description carousel-description">
-              {limitWords(current?.manga.descr)}
+              {limitWords(current?.manga.descr, MAX_WORDS)}
             </p>
 
             <div className="authors">
