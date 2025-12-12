@@ -6,8 +6,8 @@ import axios, {
 
 
 
-const BASE_URL = "https://draynor-api.fly.dev/api/v1"
-// const BASE_URL = "http://localhost:8000/api/v1"
+const BASE_URL = "https://everyday-davina-zami-d15fb826.koyeb.app/api/v1"
+
 
 class ApiClient {
 
