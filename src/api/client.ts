@@ -6,7 +6,7 @@ import axios, {
 
 
 // const BASE_URL = "http://localhost:8000/api/v1"
-const BASE_URL = "https://draynor-api.onrender.com/api/v1"
+const BASE_URL = "https://draynor.squareweb.app/api/v1"
 
 
 class ApiClient {
