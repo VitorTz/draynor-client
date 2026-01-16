@@ -6,13 +6,13 @@ const repoName = 'draynor-client';
 const branch = 'main';
 
 // https://vite.dev/config/
-// export default defineConfig({
-//   plugins: [react()],
-//   base: branch === 'main' ? `/${repoName}/` : '/',
-// })
-
-
 export default defineConfig({
   plugins: [react()],
-  base: '/', 
+  base: branch === 'main' ? `/${repoName}/` : '/',
 })
+
+
+// export default defineConfig({
+//   plugins: [react()],
+//   base: '/', 
+// })
