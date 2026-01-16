@@ -20,11 +20,11 @@ const SignupPage = ({ navigate }: SignupPageProps) => {
     e.preventDefault();
     setError('');
     
-    const success = await signup(username, email, password);
+    const {success, error} = await signup(username, email, password);
     if (success) {
       navigate('login');
-    } else {
-      setError('Erro ao criar conta');
+    } else if (error) {
+      setError(error);
     }
   };
 

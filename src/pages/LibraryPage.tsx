@@ -30,16 +30,23 @@ const LibraryPage = ({ navigate }: LibraryPageProps) => {
     setLoading(false)
   };
 
-  const statuses = ['Reading', 'Completed', 'On Hold', 'Dropped', 'Plan to Read', 'Rereading'];
+  const statuses = [
+    'Reading', 
+    'Completed', 
+    'On Hold', 
+    'Dropped', 
+    'Plan to Read', 
+    'Rereading'
+  ];
 
   return (
     <div className="library-page">
       <h1>Library</h1>
       
       <div className="status-tabs">
-        {statuses.map(s => (
+        {statuses.map((s, index) => (
           <button
-            key={s}
+            key={index}
             className={status === s ? 'active' : ''}
             onClick={() => setStatus(s)}
           >

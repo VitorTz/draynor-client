@@ -15,8 +15,7 @@ import type {
   BugType,
   Genre,
   MangaCarouselItem,
-  Comment,
-  CommentCreate
+  Comment  
 } from "../types";
 
 

@@ -36,12 +36,18 @@ const App = () => {
       .catch(err => {console.error('Login failed:', err); return false})
   };
 
-  const signup = async (username: string, email: string, password: string): Promise<boolean> => {
+  const signup = async (username: string, email: string, password: string): Promise<{success: boolean, error: string | null}> => {
     return await draynorApi
       .auth
       .signup(username, email, password)
-      .then(() => {return true})
-      .catch(err => {console.error('Signup failed:', err); return false;})
+      .then(() => {return {success: true, error: null}})
+      .catch(err => {
+        console.error('Signup failed:', err.response.data.detail); 
+        return {
+          success: false,
+          error: err.response.data.detail ?? 'Signup failed'
+        }
+    })
   };
 
   const logout = async () => {

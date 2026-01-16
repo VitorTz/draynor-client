@@ -57,7 +57,7 @@ const MangaPage = ({ navigate, manga_id }: MangaPageProps) => {
     if (!manga) return;
     try {
       await draynorApi.library.createReadingStatus(manga.id, status);
-      loadMangaData();
+      setReadingStatus(status);
     } catch (error) {
       console.error('Failed to update status:', error);
     }
@@ -92,7 +92,7 @@ const MangaPage = ({ navigate, manga_id }: MangaPageProps) => {
             <div className="manga-authors">
               <strong>Authors:</strong>{" "}
               {authors.map((a, i) => (
-                <span key={a.author_id}>
+                <span key={`${a.author_id}-${a.role}`}>
                   {a.author_name} ({normalizeAuthorRole(a.role)})
                   {i < authors.length - 1 && ", "}
                 </span>
